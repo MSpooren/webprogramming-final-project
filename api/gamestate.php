@@ -1,0 +1,1 @@
+// Returns current game state
