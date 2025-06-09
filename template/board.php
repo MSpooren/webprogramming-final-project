@@ -1,1 +1,0 @@
-// PHP-rendered game board
