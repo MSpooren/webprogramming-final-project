@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const result = document.getElementById('result');
     const turnsLeft = document.getElementById('turnsLeft');
     const restartBtn = document.getElementById('restartBtn');
-    const controls = document.getElementById('controls');
 
     // render the game grid as a table every turn
     function renderGrid() {
@@ -83,18 +82,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (itemsCollected === items.length) {
                 result.textContent = 'You collected all items! You win!';
                 if (restartBtn) restartBtn.style.display = 'inline';
-                if (controls) controls.style.display = 'none';
             } else if (turns === 0) {
                 result.textContent = 'Game over! Out of turns.';
                 if (restartBtn) restartBtn.style.display = 'inline';
-                if (controls) controls.style.display = 'none';
             }
         }
     }
 
     // WASD and arrow key controls
     document.addEventListener('keydown', function(e) {
-        if (typeof controls !== 'undefined' && controls && controls.style.display === 'none') return;
         let dir = null;
         if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') dir = 'up';
         if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') dir = 'left';
@@ -114,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGrid();
         updateTurns();
         result.textContent = '';
-        controls.style.display = 'block';
         restartBtn.style.display = 'none';
     });
 

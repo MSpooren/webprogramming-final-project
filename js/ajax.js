@@ -5,7 +5,7 @@ function savePlayerName(player, name) {
         contentType: 'application/json',
         data: JSON.stringify({ action: "set_name", player: player, name: name }),
         success: function(response) {
-            alert("Name saved successfully!");
+            $('#nameSavedMsg').text('Name saved successfully!').css('color', 'green');
         }
     });
 }
