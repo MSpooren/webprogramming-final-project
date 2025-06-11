@@ -77,3 +77,34 @@ button:hover {
 #turnsLeft {
     font-weight: bold;
 }
+.skin-select-wrapper {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.carousel {
+  display: flex;
+  overflow: hidden;
+  width: 220px;
+  justify-content: center;
+}
+
+.cat {
+  flex: 0 0 auto;
+  width: 80px;
+  opacity: 0.4;
+  transform: scale(0.7);
+  transition: all 0.3s ease;
+}
+
+.cat.active {
+  opacity: 1;
+  transform: scale(1);
+}

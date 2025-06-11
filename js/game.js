@@ -116,3 +116,28 @@ document.addEventListener('DOMContentLoaded', function() {
     renderGrid();
     updateTurns();
 });
+
+const cats = document.querySelectorAll('.cat');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const skinName = document.getElementById('skinName');
+let selectedIndex = 0;
+
+function updateSelection() {
+  cats.forEach((cat, i) => {
+    cat.classList.toggle('active', i === selectedIndex);
+  });
+  skinName.textContent = cats[selectedIndex].dataset.skin;
+}
+
+prevBtn.addEventListener('click', () => {
+  selectedIndex = (selectedIndex - 1 + cats.length) % cats.length;
+  updateSelection();
+});
+
+nextBtn.addEventListener('click', () => {
+  selectedIndex = (selectedIndex + 1) % cats.length;
+  updateSelection();
+});
+
+updateSelection();
