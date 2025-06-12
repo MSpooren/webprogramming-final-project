@@ -155,8 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 result.textContent = `You picked up an item! Total: ${itemsCollected}`;
             }
             // Move items after player moves
-            randomizeItemsRotation();
             moveItems();
+            randomizeItemsRotation();
             renderGrid();
             updateTurns();
             if (itemsCollected === items.length) {
