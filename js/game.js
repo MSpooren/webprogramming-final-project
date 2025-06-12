@@ -166,6 +166,13 @@ document.addEventListener('DOMContentLoaded', function() {
         restartBtn.style.display = 'none';
     });
 
+    newGameBtn.addEventListener('click', function() {
+        window.location.href = 'index.php';
+        $.ajax({
+            url: 'api/reset_game.php',
+            method: 'POST'
+        });
+    });  
     renderGrid();
     updateTurns();
 });
