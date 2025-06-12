@@ -42,7 +42,16 @@ $(document).ready(function() {
 
     function updateSelection() {
         cats.forEach((cat, i) => {
-            cat.classList.toggle('active', i === selectedIndex);
+            // Show only selectedIndex-1, selectedIndex, selectedIndex+1 (circular)
+            let prev = (selectedIndex - 1 + cats.length) % cats.length;
+            let center = selectedIndex;
+            let next = (selectedIndex + 1) % cats.length;
+            if (i === prev || i === center || i === next) {
+                cat.style.display = '';
+            } else {
+                cat.style.display = 'none';
+            }
+            cat.classList.toggle('active', i === center);
         });
         skinName.textContent = cats[selectedIndex].dataset.skin;
     }
@@ -57,5 +66,25 @@ $(document).ready(function() {
         updateSelection();
     });
 
+    selectSkinBtn.addEventListener('click', function() {
+        // Save selected skin for the selected player
+        const player = document.getElementById('player').value;
+        const skin = cats[selectedIndex].dataset.skin;
+        $.ajax({
+            url: 'api/save_status.php',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                action: 'set_skin',
+                player: player,
+                skin: skin
+            }),
+            success: function(response) {
+                // Optionally show a message or visual feedback
+                $('#skinSelectedMsg').text("Skin selected!");
+            }
+        });
+    });  
+    
     updateSelection();
 });

@@ -20,6 +20,13 @@ if ($incoming['action'] === "set_name") {
     save_state($state, $dataFile);
 }
 
+if ($incoming['action'] === "set_skin") {
+    $player = $incoming['player'];
+    $skin = $incoming['skin'];
+    $state['players'][$player]['skin'] = $skin;
+    save_state($state, $dataFile);
+}
+
 if ($incoming['startGame'] ?? false) {
     if ($state['players']['player1']['name'] && $state['players']['player2']['name']) {
         $state['game_started'] = true;

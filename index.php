@@ -13,15 +13,22 @@
     <div class="skin-select-wrapper">
   <h2>Kies je kat:</h2>
   <div class="carousel-wrapper">
-    <button id="prev">‹</button>
+    <button id="prev"><</button>
     <div class="carousel" id="carousel">
       <img src="images/tile000.png" class="cat active" data-skin="tile000.png">
       <img src="images/tile001.png" class="cat" data-skin="tile001.png">
       <img src="images/tile002.png" class="cat" data-skin="tile002.png">
+      <img src="images/tile003.png" class="cat" data-skin="tile003.png">
+      <img src="images/tile004.png" class="cat" data-skin="tile004.png">
+      <img src="images/tile005.png" class="cat" data-skin="tile005.png">
+      <img src="images/tile006.png" class="cat" data-skin="tile006.png">
+      <img src="images/tile007.png" class="cat" data-skin="tile007.png">
+      <img src="images/tile008.png" class="cat" data-skin="tile008.png">
     </div>
-    <button id="next"></button>
+    <button id="next">></button>
+    <button id="selectSkinBtn">Select Skin</button>
   </div>
-  <p>Geselecteerde skin: <span id="skinName">tile000.png</span></p>
+  <div id="skinSelectedMsg"></div>
 </div>
 
     <!-- Name setup form -->

@@ -5,7 +5,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const gridSize = 7;
     let turns = 20;
     let player = { x: 3, y: 3 };
-    
+    let player_skin = 'tile000.png'; // default skin
+
+    // Add variables for player names and skins
+    let player1_name = '';
+    let player2_name = '';
+    let player1_skin = '';
+    let player2_skin = '';
+
+    // Fetch player info from backend (example endpoint: api/get_players.php)
+    function fetchPlayerInfo() {
+        return fetch('api/get_players.php')
+            .then(response => response.json())
+            .then(data => {
+                player1_name = data.player1.name;
+                player2_name = data.player2.name;
+                player1_skin = data.player1.skin;
+                player2_skin = data.player2.skin;
+                // Set default player skin to player1's skin
+                player_skin = player1_skin || player_skin;
+            })
+            .catch(() => {
+                // fallback to defaults if fetch fails
+                player1_name = 'Player 1';
+                player2_name = 'Player 2';
+                player1_skin = player_skin;
+                player2_skin = player_skin;
+            });
+    }
     
     // returns array with dictionarys with x and y coordinated and a picked status
     function generateRandomItems(count) {
@@ -42,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             for (let x = 0; x < gridSize; x++) {
                 let cellContent = '';
                 if (player.x === x && player.y === y) {
-                    cellContent = 'P';
+                    cellContent = `<img src="images/${player_skin}" alt="Player" style="width:64px;height:64px;vertical-align:middle;">`;
                 }
                 let itemHere = items.find(item => item.x === x && item.y === y && !item.picked);
                 if (itemHere) {
@@ -173,7 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST'
         });
     });  
-    renderGrid();
-    updateTurns();
+    fetchPlayerInfo().then(() => {
+        renderGrid();
+        updateTurns();
+    });
 });
 
