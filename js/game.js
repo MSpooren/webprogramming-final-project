@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const gridSize = 7;
     let turns = 20;
     let player = { x: 3, y: 3 };
+    
+    
     // returns array with dictionarys with x and y coordinated and a picked status
     function generateRandomItems(count) {
         const positions = new Set();
@@ -16,7 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
             let y = Math.floor(Math.random() * gridSize);
             let key = `${x},${y}`;
             if (!positions.has(key)) {
-                itemsArr.push({ x, y, picked: false });
+                // Add random rotation (0, 90, 180, 270)
+                let rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
+                itemsArr.push({ x, y, picked: false, rotation });
                 positions.add(key);
             }
         }
@@ -42,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 let itemHere = items.find(item => item.x === x && item.y === y && !item.picked);
                 if (itemHere) {
-                    cellContent += '🎁';
+                    // Add rotation style
+                    cellContent += `<img src="images/mouse.png" alt="Mouse" style="width:64px;height:64px;vertical-align:middle;transform:rotate(${itemHere.rotation}deg);">`;
                 }
                 // Add coordinates in light gray for debugging
                 cellContent += `<div style=\"font-size:0.5em;color:#bbb;\">x${x},y${y}</div>`;
@@ -57,6 +62,51 @@ document.addEventListener('DOMContentLoaded', function() {
     //turn counter
     function updateTurns() {
         turnsLeft.textContent = turns;
+    }
+
+    // Helper: get movement delta from rotation
+    function getDirection(rotation) {
+        switch (rotation) {
+            case 0: return { dx: 0, dy: -1 };      // North
+            case 90: return { dx: 1, dy: 0 };      // East
+            case 180: return { dx: 0, dy: 1 };     // South
+            case 270: return { dx: -1, dy: 0 };    // West
+            default: return { dx: 0, dy: 0 };
+        }
+    }
+
+    // Randomize rotation for all items
+    function randomizeItemsRotation() {
+        items.forEach(item => {
+            if (!item.picked) {
+                item.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
+            }
+        });
+    }
+
+    // Move items one tile in their rotation direction if possible
+    function moveItems() {
+        items.forEach(item => {
+            if (item.picked) return;
+            const { dx, dy } = getDirection(item.rotation);
+            const nx = item.x + dx;
+            const ny = item.y + dy;
+            // Check bounds and avoid player position
+            if (
+                nx >= 0 && nx < gridSize &&
+                ny >= 0 && ny < gridSize &&
+                !(player.x === nx && player.y === ny)
+            ) {
+                // Avoid overlapping with other items
+                let occupied = items.some(other =>
+                    !other.picked && other !== item && other.x === nx && other.y === ny
+                );
+                if (!occupied) {
+                    item.x = nx;
+                    item.y = ny;
+                }
+            }
+        });
     }
 
     function movePlayer(dir) {
@@ -77,6 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 itemsCollected++;
                 result.textContent = `You picked up an item! Total: ${itemsCollected}`;
             }
+            // Move items after player moves
+            randomizeItemsRotation();
+            moveItems();
             renderGrid();
             updateTurns();
             if (itemsCollected === items.length) {
