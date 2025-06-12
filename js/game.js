@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
     
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentPlayer = urlParams.get("player"); // bijv. "player1"
+
     // returns array with dictionarys with x and y coordinated and a picked status
     function generateRandomItems(count) {
         const positions = new Set();
@@ -205,4 +208,34 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTurns();
     });
 });
+
+function pollGameState() {
+  $.getJSON("data/game.json", function(data) {
+    const player1 = data.players.player1;
+    const player2 = data.players.player2;
+
+    // Zet beide spelers op de juiste plek op het grid
+    renderPlayer("player1", player1.x, player1.y, player1.skin);
+    renderPlayer("player2", player2.x, player2.y, player2.skin);
+
+    // Toon of het jouw beurt is
+    if (data.turn === currentPlayer) {
+      enableControls();
+    } else {
+      disableControls();
+    }
+  });
+}
+
+setInterval(pollGameState, 1000); // elke seconde ophalen
+
+function sendMove(direction) {
+  $.post("api/move.php", {
+    player: currentPlayer,
+    direction: direction
+  }, function(response) {
+    console.log("Beweging verzonden:", response);
+    pollGameState(); // ververs direct na eigen zet
+  });
+}
 
