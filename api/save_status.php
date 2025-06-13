@@ -65,7 +65,22 @@ if ($incoming['action'] === "move") {
     $state['players'][$player]['x'] = $x;
     $state['players'][$player]['y'] = $y;
     $state['players'][$player]['last_action_time'] = $timeNow;
+    $inventory = &$state['players'][$player]['inventory'];
+
+if (in_array("kattenmelk", $inventory)) {
+    if (!isset($state['players'][$player]['milk_used']) || $state['players'][$player]['milk_used'] === false) {
+        $state['players'][$player]['milk_used'] = true;
+        // GEEN beurtwissel
+    } else {
+        // 2e zet gedaan → verwijder melk en wissel beurt
+        $state['players'][$player]['milk_used'] = false;
+        $inventory = array_values(array_filter($inventory, fn($item) => $item !== "kattenmelk"));
+        $state['turn'] = $player === "player1" ? "player2" : "player1";
+    }
+} else {
     $state['turn'] = $player === "player1" ? "player2" : "player1";
+}
+
 
     save_state($state, $dataFile);
  }
@@ -105,3 +120,6 @@ if ($incoming['action'] === "move") {
 
     save_state($state, $dataFile);
  }
+
+ // Wissel beurt
+$data['turn'] = ($player === "player1") ? "player2" : "player1";

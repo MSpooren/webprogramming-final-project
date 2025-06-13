@@ -230,7 +230,7 @@ function pollGameState() {
 setInterval(pollGameState, 1000); // elke seconde ophalen
 
 function sendMove(direction) {
-  $.post("api/move.php", {
+  $.post("api/save_status.php", {
     player: currentPlayer,
     direction: direction
   }, function(response) {
