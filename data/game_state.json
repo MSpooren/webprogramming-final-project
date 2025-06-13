@@ -2,7 +2,7 @@
     "players": {
         "player1": {
             "id": 1,
-            "name": "",
+            "name": "test",
             "x": 0,
             "y": 0,
             "hp": 10,
@@ -10,7 +10,7 @@
         },
         "player2": {
             "id": 2,
-            "name": "",
+            "name": "test2",
             "x": 5,
             "y": 5,
             "hp": 10,
