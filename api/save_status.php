@@ -60,6 +60,31 @@ if ($incoming['action'] === "move") {
         case "down": if ($y < 4) $y++; break;
         case "left": if ($x > 0) $x--; break;
         case "right": if ($x < 4) $x++; break;
+        case "roll_up":
+    if (in_array("kattenrol", $inventory)) {
+        $y = max(0, $y - 3);
+        $inventory = array_values(array_filter($inventory, fn($item) => $item !== "kattenrol"));
+    }
+    break;
+case "roll_down":
+    if (in_array("kattenrol", $inventory)) {
+        $y = min(4, $y + 3);
+        $inventory = array_values(array_filter($inventory, fn($item) => $item !== "kattenrol"));
+    }
+    break;
+case "roll_left":
+    if (in_array("kattenrol", $inventory)) {
+        $x = max(0, $x - 3);
+        $inventory = array_values(array_filter($inventory, fn($item) => $item !== "kattenrol"));
+    }
+    break;
+case "roll_right":
+    if (in_array("kattenrol", $inventory)) {
+        $x = min(4, $x + 3);
+        $inventory = array_values(array_filter($inventory, fn($item) => $item !== "kattenrol"));
+    }
+    break;
+
     }
 
     $state['players'][$player]['x'] = $x;

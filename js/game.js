@@ -214,6 +214,13 @@ function pollGameState() {
     const player1 = data.players.player1;
     const player2 = data.players.player2;
 
+    const myInventory = data.players[currentPlayer].inventory || [];
+    console.log("Mijn inventory:", myInventory);
+
+    if (myInventory.includes("kattenrol")) {
+      console.log("Je hebt een kattenrol!");
+    }
+
     // Zet beide spelers op de juiste plek op het grid
     renderPlayer("player1", player1.x, player1.y, player1.skin);
     renderPlayer("player2", player2.x, player2.y, player2.skin);
@@ -233,6 +240,8 @@ function sendMove(direction) {
   $.post("api/save_status.php", {
     player: currentPlayer,
     direction: direction
+    sendMove("roll_right"); // of roll_left, roll_up, roll_down
+    sendMove("up"); // zoals nu
   }, function(response) {
     console.log("Beweging verzonden:", response);
     pollGameState(); // ververs direct na eigen zet
