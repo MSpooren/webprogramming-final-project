@@ -240,8 +240,6 @@ function sendMove(direction) {
   $.post("api/save_status.php", {
     player: currentPlayer,
     direction: direction
-    sendMove("roll_right"); // of roll_left, roll_up, roll_down
-    sendMove("up"); // zoals nu
   }, function(response) {
     console.log("Beweging verzonden:", response);
     pollGameState(); // ververs direct na eigen zet

@@ -2,20 +2,20 @@
     "players": {
         "player1": {
             "id": 1,
-            "name": "test",
+            "name": "",
             "x": 0,
             "y": 0,
             "hp": 10,
-            "inventory": []
+            "inventory": [],
+            "skin": "tile004.png"
         },
         "player2": {
             "id": 2,
-            "name": "test2",
+            "name": "",
             "x": 5,
             "y": 5,
             "hp": 10,
-            "inventory": ["kattenmelk", "kattenrol"]
-            "milk_used": false
+            "inventory": []
         }
     },
     "items": [],
