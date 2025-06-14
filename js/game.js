@@ -1,6 +1,36 @@
 // Turn logic, animations, jQuery and AJAX
 // basic grid logic with player movement and item collection
 // upon page load, initialize the game grid and player
+const currentPlayer = "player1"; // hardcoded voorlopig
+
+function pollGameState() {
+  $.getJSON("data/game_state.json", function(data) {
+    const player1 = data.players.player1;
+    const player2 = data.players.player2;
+
+    const myInventory = data.players[currentPlayer].inventory || [];
+    console.log("Mijn inventory:", myInventory);
+
+    if (myInventory.includes("kattenrol")) {
+      console.log("Je hebt een kattenrol!");
+    }
+
+    // Zet beide spelers op de juiste plek op het grid
+    renderPlayer("player1", player1.x, player1.y, player1.skin);
+    renderPlayer("player2", player2.x, player2.y, player2.skin);
+
+    // Toon of het jouw beurt is
+    if (data.turn === currentPlayer) {
+      enableControls();
+    } else {
+      disableControls();
+    }
+
+    // ⬇️ Update inventory visuals
+    loadInventory(data.players[currentPlayer]);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const gridSize = 7;
     let turns = 20;
@@ -139,6 +169,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    console.log("TEST currentPlayer =", currentPlayer);
+    function loadInventory(playerdata) {
+  fetch("data/game_state.json")
+    .then(response => response.json())
+    .then(data => {
+      const inventory = playerData.inventory || []; // hardcoded voorlopig
+      const container = document.getElementById("inventory-items");
+
+      container.innerHTML = ""; // leegmaken
+
+      inventory.forEach(item => {
+        const img = document.createElement("img");
+        img.src = `images/${getItemImage(item)}`;
+        img.alt = item;
+        container.appendChild(img);
+      });
+    });
+}
+
     function movePlayer(dir) {
         if (turns <= 0) return;
         let nx = player.x, ny = player.y;
@@ -209,30 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function pollGameState() {
-  $.getJSON("data/game.json", function(data) {
-    const player1 = data.players.player1;
-    const player2 = data.players.player2;
 
-    const myInventory = data.players[currentPlayer].inventory || [];
-    console.log("Mijn inventory:", myInventory);
-
-    if (myInventory.includes("kattenrol")) {
-      console.log("Je hebt een kattenrol!");
-    }
-
-    // Zet beide spelers op de juiste plek op het grid
-    renderPlayer("player1", player1.x, player1.y, player1.skin);
-    renderPlayer("player2", player2.x, player2.y, player2.skin);
-
-    // Toon of het jouw beurt is
-    if (data.turn === currentPlayer) {
-      enableControls();
-    } else {
-      disableControls();
-    }
-  });
-}
 
 setInterval(pollGameState, 1000); // elke seconde ophalen
 
@@ -246,23 +272,6 @@ function sendMove(direction) {
   });
 }
 
-function loadInventory() {
-  fetch("data/game_state.json")
-    .then(response => response.json())
-    .then(data => {
-      const inventory = data.players["player1"].inventory; // hardcoded voorlopig
-      const container = document.getElementById("inventory-items");
-
-      container.innerHTML = ""; // leegmaken
-
-      inventory.forEach(item => {
-        const img = document.createElement("img");
-        img.src = `images/${getItemImage(item)}`;
-        img.alt = item;
-        container.appendChild(img);
-      });
-    });
-}
 
 function getItemImage(item) {
   switch (item) {
@@ -273,5 +282,3 @@ function getItemImage(item) {
     default:             return "default.png";
   }
 }
-
-loadInventory();

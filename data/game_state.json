@@ -2,20 +2,19 @@
     "players": {
         "player1": {
             "id": 1,
-            "name": "",
+            "name": "test1",
             "x": 0,
             "y": 0,
             "hp": 10,
-            "inventory": [],
-            "skin": "tile004.png"
+            "inventory": []
         },
         "player2": {
             "id": 2,
-            "name": "",
+            "name": "test2",
             "x": 5,
             "y": 5,
             "hp": 10,
-            "inventory": ["kattenmelk", "mine", "laserpointer"]
+            "inventory": []
         }
     },
     "items": [],
