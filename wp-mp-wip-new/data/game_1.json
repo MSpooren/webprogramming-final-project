@@ -1,0 +1,25 @@
+{
+    "players": {
+        "1": {
+            "name": "pink",
+            "x": 0,
+            "y": 3,
+            "skin": "tile000",
+            "status": "normal"
+        },
+        "2": {
+            "name": "yellow",
+            "x": 6,
+            "y": 3,
+            "skin": "tile003",
+            "status": "normal"
+        }
+    },
+    "turn": 1,
+    "mice": [],
+    "items": [],
+    "couch_counter": {
+        "1": 0,
+        "2": 0
+    }
+}
