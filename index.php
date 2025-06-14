@@ -49,5 +49,11 @@
         <div id="nameSavedMsg"></div>
         <button id="startGameBtn">Start Game</button>
     </div>
+
+  <div id="inventory">
+    <h3>Inventory:</h3>
+    <div id="inventory-items" class="inventory-list"></div>
+  </div>
+
 </body>
 </html>

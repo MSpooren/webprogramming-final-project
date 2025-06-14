@@ -15,7 +15,7 @@
             "x": 5,
             "y": 5,
             "hp": 10,
-            "inventory": []
+            "inventory": ["kattenmelk", "mine", "laserpointer"]
         }
     },
     "items": [],

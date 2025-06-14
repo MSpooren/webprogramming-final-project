@@ -246,3 +246,32 @@ function sendMove(direction) {
   });
 }
 
+function loadInventory() {
+  fetch("data/game_state.json")
+    .then(response => response.json())
+    .then(data => {
+      const inventory = data.players["player1"].inventory; // hardcoded voorlopig
+      const container = document.getElementById("inventory-items");
+
+      container.innerHTML = ""; // leegmaken
+
+      inventory.forEach(item => {
+        const img = document.createElement("img");
+        img.src = `images/${getItemImage(item)}`;
+        img.alt = item;
+        container.appendChild(img);
+      });
+    });
+}
+
+function getItemImage(item) {
+  switch (item) {
+    case "laserpointer": return "laserpointer.png";
+    case "kattenmelk":   return "milk.png";
+    case "mine":         return "mine.png";
+    case "kattenrol":    return "wool.png";
+    default:             return "default.png";
+  }
+}
+
+loadInventory();
