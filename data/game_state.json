@@ -14,7 +14,7 @@
             "x": 5,
             "y": 5,
             "hp": 10,
-            "inventory": []
+            "inventory": ["kattenrol", "kattenmelk", "mine"]
         }
     },
     "items": [],

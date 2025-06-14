@@ -169,24 +169,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    console.log("TEST currentPlayer =", currentPlayer);
-    function loadInventory(playerdata) {
-  fetch("data/game_state.json")
-    .then(response => response.json())
-    .then(data => {
-      const inventory = playerData.inventory || []; // hardcoded voorlopig
-      const container = document.getElementById("inventory-items");
+    function loadInventory(playerData) {
+  console.log("Inventory function draait:", playerData.inventory);
 
-      container.innerHTML = ""; // leegmaken
+  const inventory = playerData.inventory || [];
+  const container = document.getElementById("inventory-items");
 
-      inventory.forEach(item => {
-        const img = document.createElement("img");
-        img.src = `images/${getItemImage(item)}`;
-        img.alt = item;
-        container.appendChild(img);
-      });
-    });
+  if (!container) {
+    console.warn("Inventory container niet gevonden");
+    return;
+  }
+
+  container.innerHTML = ""; // leegmaken
+
+  inventory.forEach(item => {
+    const img = document.createElement("img");
+    img.src = `images/${getItemImage(item)}`;
+    img.alt = item;
+    img.title = item;
+    img.style.width = "48px";
+    img.style.height = "48px";
+    container.appendChild(img);
+  });
 }
+
 
     function movePlayer(dir) {
         if (turns <= 0) return;
