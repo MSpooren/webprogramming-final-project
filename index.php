@@ -37,10 +37,15 @@ error_reporting(E_ALL);
                 "tile04_tabby.png" => "Tabby Cat",
                 "tile05_siamese.png" => "Siamese Cat",
             ];
-            
+
             foreach ($images as $img) {
                 $basename = basename($img, ".png");
+                $catName = isset($catTypes[$basename]) ? $catTypes[$basename] : "Unknown Cat";
+
+                echo "<div class='skin-container'>";
                 echo "<img src='$img' class='skin-option' data-skin='$basename'>";
+                echo "<span class='cat-name'>$catName</span>";
+                echo "</div>";
             }
             ?>
         </div>
