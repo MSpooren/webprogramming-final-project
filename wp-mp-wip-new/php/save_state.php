@@ -7,8 +7,29 @@ $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $move = $data['move'] ?? null;
 
-if (!$sessionId || !$playerId || !$move) {
-    echo json_encode(["error" => "Missing data"]);
+$filename = "../data/game_" . $sessionId . ".json";
+if (!file_exists($filename)) {
+    echo json_encode(["error" => "Game file not found"]);
+    exit;
+}
+$gameState = json_decode(file_get_contents($filename), true);
+$player = &$gameState["players"][$playerId];
+
+if (isset($player['forced_direction']) && is_string($player['forced_direction'])) {
+    // Forceer move op basis van forced_direction
+    switch ($player['forced_direction']) {
+        case "right": $move = ['x' => 1, 'y' => 0]; break;
+        case "left":  $move = ['x' => -1, 'y' => 0]; break;
+        case "down":  $move = ['x' => 0, 'y' => 1]; break;
+        case "up":    $move = ['x' => 0, 'y' => -1]; break;
+        default: $move = ['x' => 0, 'y' => 0]; break;
+    }
+    $gameState["players"][$playerId]['forced_direction'] = null;
+}
+
+// Na deze forced-move-check kun je veilig controleren:
+if (!$sessionId || !$playerId || !$move || !isset($move['x']) || !isset($move['y'])) {
+    echo json_encode(["error" => "Missing or invalid move data"]);
     exit;
 }
 
@@ -17,8 +38,6 @@ if (!file_exists($filename)) {
     echo json_encode(["error" => "Game file not found"]);
     exit;
 }
-
-$gameState = json_decode(file_get_contents($filename), true);
 
 // Check turn
 if ((int)$gameState["turn"] !== (int)$playerId) {
@@ -135,15 +154,5 @@ $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
 
-case "attack":
-    if ($incoming['item'] === "laserpointer") {
-        $opponentId = $incoming['player'] === "1" ? "2" : "1";
-        $state['players'][$opponentId]['forced_direction'] = $state['players'][$incoming['player']]['last_move'];
-        // Item verwijderen uit inventory kan hier ook
-        $response['success'] = true;
-    } else {
-        $response['error'] = "Onbekend item";
-    }
-    break;
 
 ?>

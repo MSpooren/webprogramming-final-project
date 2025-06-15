@@ -1,30 +1,38 @@
 {
     "players": {
         "1": {
-            "name": "pink",
+            "name": "test1",
+            "skin": "tile000",
             "x": 0,
             "y": 3,
-            "skin": "tile000",
             "status": "normal"
-            "forced_direction": null
-            "last_move": null
-
-
         },
         "2": {
-            "name": "yellow",
+            "name": "test2",
+            "skin": "tile001",
             "x": 6,
             "y": 3,
-            "skin": "tile003",
             "status": "normal"
-            "forced_direction": null
-            "last_move": null
-
-
         }
     },
     "turn": 1,
-    "mice": [],
+    "mice": [
+        {
+            "x": 3,
+            "y": 4,
+            "direction": 270
+        },
+        {
+            "x": 0,
+            "y": 2,
+            "direction": 180
+        },
+        {
+            "x": 4,
+            "y": 5,
+            "direction": 90
+        }
+    ],
     "items": [],
     "couch_counter": {
         "1": 0,
