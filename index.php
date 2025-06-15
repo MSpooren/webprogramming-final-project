@@ -1,55 +1,135 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Enter Cat Name</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="js/ajax.js"></script>
-    <script src="js/name-setup.js"></script>
+    <title>Cat Couch Clash</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <!-- Skin selection -->
-    <div class="skin-select-wrapper">
-  <h2>Kies je kat:</h2>
-  <div class="carousel-wrapper">
-    <button id="prev"><</button>
-    <div class="carousel" id="carousel">
-      <img src="images/tile000.png" class="cat active" data-skin="tile000.png">
-      <img src="images/tile001.png" class="cat" data-skin="tile001.png">
-      <img src="images/tile002.png" class="cat" data-skin="tile002.png">
-      <img src="images/tile003.png" class="cat" data-skin="tile003.png">
-      <img src="images/tile004.png" class="cat" data-skin="tile004.png">
-      <img src="images/tile005.png" class="cat" data-skin="tile005.png">
-      <img src="images/tile006.png" class="cat" data-skin="tile006.png">
-      <img src="images/tile007.png" class="cat" data-skin="tile007.png">
-      <img src="images/tile008.png" class="cat" data-skin="tile008.png">
-    </div>
-    <button id="next">></button>
-    <button id="selectSkinBtn">Select Skin</button>
-  </div>
-  <div id="skinSelectedMsg"></div>
+
+<!-- Step 1: Title -->
+<div id="title-screen">
+    <h1>🐾 Cat Couch Clash 🛋️</h1>
+    <button id="start-btn">Start</button>
 </div>
 
-    <!-- Name setup form -->
-    <div id="nameSetup">
-        <h2>Enter your cat name!</h2>
-        <form id="nameForm">
-            <label>Player:</label>
-            <select id="player">
-                <option value="player1">Player 1</option>
-                <option value="player2">Player 2</option>
-            </select>
-            <br><br>
-            <label for="catName">Cat Name:</label>
-            <input type="text" id="catName" required>
-            <br><br>
-            <button type="submit">Save Name</button>
-        </form>
-        <div id="nameSavedMsg"></div>
-        <button id="startGameBtn">Start Game</button>
+<!-- Step 2: Player Setup -->
+<div id="setup-screen">
+    <h2>Enter your cat's name!</h2>
+    <input type="text" id="name" placeholder="Cat Name :3" required><br><br>
+
+    <div id="skin-selector-wrapper">
+        <button id="prev-skin">←</button>
+
+        <div id="skin-strip">
+            <?php
+            $images = glob("images/tile*.png");
+            foreach ($images as $img) {
+                $basename = basename($img, ".png");
+                echo "<img src='$img' class='skin-option' data-skin='$basename'>";
+            }
+            ?>
+        </div>
+
+        <button id="next-skin">→</button>
     </div>
 
+    <p>Selected skin: <span id="selected-skin-name">None</span></p>
+    <input type="hidden" id="skin">
+
+    <button id="ready-btn">Ready!</button>
+</div>
+
+<!-- Step 3: Waiting -->
+<div id="waiting-screen">
+    <h3>Waiting for your opponent...</h3>
+    <p id="status-msg">Checking status...</p>
+</div>
+
+<script>
+    let selectedSkin = null;
+    let sessionId = null;
+    let playerId = null;
+
+    $("#title-screen").show();
+
+    $("#start-btn").on("click", function () {
+        $("#title-screen").hide();
+        $("#setup-screen").show();
+    });
+
+    $("#skin-selection img").on("click", function () {
+        $("#skin-selection img").removeClass("selected");
+        $(this).addClass("selected");
+        selectedSkin = $(this).data("skin");
+        $("#skin").val(selectedSkin);
+    });
+
+    $("#ready-btn").on("click", function () {
+        const playerName = $("#name").val().trim();
+        const pickedSkin = $("#skin").val(); // ✅ renamed
+
+        if (!playerName || !pickedSkin) {
+            alert("Please enter a name and select a skin.");
+            return;
+        }
+
+        $.getJSON("php/assign_player.php", function (data) {
+            localStorage.setItem("sessionId", data.sessionId);
+            localStorage.setItem("playerId", data.playerId);
+
+            $.ajax({
+                url: "php/save_players.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    sessionId: data.sessionId,
+                    playerId: data.playerId,
+                    name: playerName,
+                    skin: pickedSkin // ✅ fixed
+                }),
+                success: function () {
+                    $("#setup-screen").hide();
+                    $("#waiting-screen").show();
+                    waitForOpponent();
+                }
+            });
+        });
+    });
+
+    function waitForOpponent() {
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
+
+        const interval = setInterval(() => {
+            $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+                const hasP1 = state.players["1"].name;
+                const hasP2 = state.players["2"].name;
+
+                if (hasP1 && hasP2) {
+                    clearInterval(interval);
+                    if (playerId === "2") {
+                        $.get("php/start_game.php?sessionId=" + sessionId, function () {
+                            window.location.href = "game.php";
+                        });
+                    } else {
+                        window.location.href = "game.php";
+                    }
+                } else {
+                    const missing = !hasP1 ? "Player 1" : "Player 2";
+                    $("#status-msg").text("Waiting for " + missing + "...");
+                }
+            });
+        }, 1500);
+    }
+</script>
+<script src="js/skin_carousel.js"></script>
 
 </body>
 </html>

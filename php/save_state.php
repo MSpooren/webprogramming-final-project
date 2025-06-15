@@ -7,8 +7,29 @@ $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $move = $data['move'] ?? null;
 
-if (!$sessionId || !$playerId || !$move) {
-    echo json_encode(["error" => "Missing data"]);
+$filename = "../data/game_" . $sessionId . ".json";
+if (!file_exists($filename)) {
+    echo json_encode(["error" => "Game file not found"]);
+    exit;
+}
+$gameState = json_decode(file_get_contents($filename), true);
+$player = &$gameState["players"][$playerId];
+
+if (isset($player['forced_direction']) && is_string($player['forced_direction'])) {
+    // Forceer move op basis van forced_direction
+    switch ($player['forced_direction']) {
+        case "right": $move = ['x' => 1, 'y' => 0]; break;
+        case "left":  $move = ['x' => -1, 'y' => 0]; break;
+        case "down":  $move = ['x' => 0, 'y' => 1]; break;
+        case "up":    $move = ['x' => 0, 'y' => -1]; break;
+        default: $move = ['x' => 0, 'y' => 0]; break;
+    }
+    $gameState["players"][$playerId]['forced_direction'] = null;
+}
+
+// Na deze forced-move-check kun je veilig controleren:
+if (!$sessionId || !$playerId || !$move || !isset($move['x']) || !isset($move['y'])) {
+    echo json_encode(["error" => "Missing or invalid move data"]);
     exit;
 }
 
@@ -17,8 +38,6 @@ if (!file_exists($filename)) {
     echo json_encode(["error" => "Game file not found"]);
     exit;
 }
-
-$gameState = json_decode(file_get_contents($filename), true);
 
 // Check turn
 if ((int)$gameState["turn"] !== (int)$playerId) {
@@ -30,6 +49,15 @@ if ((int)$gameState["turn"] !== (int)$playerId) {
 $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
+
+if (!isset($player['last_move'])) $player['last_move'] = null;
+if (!isset($player['forced_direction'])) $player['forced_direction'] = null;
+
+
+if ($move['x'] === 1) $player['last_move'] = "right";
+elseif ($move['x'] === -1) $player['last_move'] = "left";
+elseif ($move['y'] === 1) $player['last_move'] = "down";
+elseif ($move['y'] === -1) $player['last_move'] = "up";
 
 // Proposed new coordinates
 $newX = $player['x'] + $move['x'];
@@ -129,6 +157,7 @@ $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
 
+<<<<<<< HEAD:wp-mp-wip-new/php/save_state.php
 function moveCouch(&$gameState) {
     // Move couch to a random unoccupied position
     $occupied = [];
@@ -174,4 +203,7 @@ function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY) {
         moveCouch($gameState);
     }
 }
+=======
+
+>>>>>>> 2f6cd225304ac532fdfbdaa3855001641a905c4f:php/save_state.php
 ?>
