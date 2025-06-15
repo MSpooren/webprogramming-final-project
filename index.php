@@ -30,6 +30,14 @@ error_reporting(E_ALL);
         <div id="skin-strip">
             <?php
             $images = glob("images/tile*.png");
+            $catTypes = [
+                "tile01_white.png" => "White Cat",
+                "tile02_tuxedo.png" => "Tuxedo Cat",
+                "tile03_ginger.png" => "Ginger Cat",
+                "tile04_tabby.png" => "Tabby Cat",
+                "tile05_siamese.png" => "Siamese Cat",
+            ];
+            
             foreach ($images as $img) {
                 $basename = basename($img, ".png");
                 echo "<img src='$img' class='skin-option' data-skin='$basename'>";
