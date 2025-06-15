@@ -45,6 +45,12 @@ elseif ($move['x'] === -1) $player['last_move'] = "left";
 elseif ($move['y'] === 1) $player['last_move'] = "down";
 elseif ($move['y'] === -1) $player['last_move'] = "up";
 
+// Track movesThisTurn
+if (!isset($player['movesThisTurn'])) {
+    $player['movesThisTurn'] = 0;
+}
+$player['movesThisTurn']++;
+
 // Proposed new coordinates
 $newX = $player['x'] + $move['x'];
 $newY = $player['y'] + $move['y'];
@@ -136,8 +142,14 @@ foreach ($gameState['mice'] as $mouse) {
 
 $gameState['mice'] = $updatedMice;
 
-// Switch turn
-$gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
+// After all move logic, handle turn switching:
+if ($player['movesThisTurn'] >= 2) {
+    // Switch turn
+    $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
+    // Reset movesThisTurn for both players
+    $gameState["players"][$playerId]['movesThisTurn'] = 0;
+    $gameState["players"][$opponentId]['movesThisTurn'] = 0;
+}
 
 // Save new state
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));

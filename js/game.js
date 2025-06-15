@@ -1,6 +1,12 @@
 function loadGameState() {
     const sessionId = localStorage.getItem("sessionId");
     $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+        // Reset move buffer if turn changed
+        const lastTurn = localStorage.getItem("lastTurn");
+        if (lastTurn === null || parseInt(lastTurn) !== state.turn) {
+            moveBuffer = [];
+            localStorage.setItem("lastTurn", state.turn);
+        }
         renderGrid(state);
         updateTurnIndicator(state.turn);
         updateInventory(state);
@@ -119,8 +125,10 @@ function updateScoreboard(state) {
     $("#player2-score").text(n2 + ": " + p2);
 }
 
+// Store the moves for the current turn
+let moveBuffer = [];
+
 function sendMove(dx, dy) {
-    console.log("sendMove called with:", dx, dy);
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
 
@@ -129,6 +137,15 @@ function sendMove(dx, dy) {
             alert("It's not your turn!");
             return;
         }
+
+        // Get movesThisTurn from state
+        const movesThisTurn = state.players[playerId].movesThisTurn || 0;
+        if (movesThisTurn >= 2) {
+            alert("You have already made 2 moves this turn.");
+            return;
+        }
+
+        moveBuffer.push({ x: dx, y: dy });
 
         $.ajax({
             url: "php/save_state.php",
@@ -140,11 +157,15 @@ function sendMove(dx, dy) {
                 move: { x: dx, y: dy }
             }),
             success: function () {
+                // After the second move, clear buffer and reload state
+                if (moveBuffer.length >= 2) {
+                    moveBuffer = [];
+                }
                 loadGameState();
             },
             error: function(xhr, status, error) {
-        console.error("AJAX error:", status, error);
-        console.error("Response:", xhr.responseText);
+                console.error("AJAX error:", status, error);
+                console.error("Response:", xhr.responseText);
             }
         });
     });
@@ -198,17 +219,30 @@ $("#useLaser").on("click", function () {
     });
 });
 
+// Track keydown state and add delay to prevent rapid moves
+const keyDown = {};
+const keyDelay = 200; // milliseconds
 
-// WASD key movement
 $(document).on("keydown", function (e) {
     const key = e.key.toLowerCase();
-    if (key === "w") sendMove(0, -1);
-    if (key === "s") sendMove(0, 1);
-    if (key === "a") sendMove(-1, 0);
-    if (key === "d") sendMove(1, 0);
+    if (keyDown[key]) return; // Already pressed or in delay, ignore
+    keyDown[key] = true;
+    console.log("Key pressed:", key);
+    let moved = false;
+    if (key === "w") { sendMove(0, -1); moved = true; }
+    if (key === "s") { sendMove(0, 1); moved = true; }
+    if (key === "a") { sendMove(-1, 0); moved = true; }
+    if (key === "d") { sendMove(1, 0); moved = true; }
+
+    if (moved) {
+        setTimeout(() => { keyDown[key] = false; }, keyDelay);
+    }
 });
 
-
+$(document).on("keyup", function (e) {
+    const key = e.key.toLowerCase();
+    keyDown[key] = false;
+});
 
 // Auto-update the game every 2 seconds
 setInterval(loadGameState, 2000);

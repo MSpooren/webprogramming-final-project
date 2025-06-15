@@ -60,20 +60,5 @@
     <p id="inventory">Inventory: </p>
     <button id="useLaser">Gebruik Laserpointer</button>
 
-
-    <script>
-        // Load game state every 2 seconds
-        setInterval(loadGameState, 2000);
-        loadGameState();
-
-        $(document).on("keydown", function (e) {
-            const key = e.key.toLowerCase();
-            console.log("Key pressed:", key);
-            if (key === "w") sendMove(0, -1);
-            if (key === "s") sendMove(0, 1);
-            if (key === "a") sendMove(-1, 0);
-            if (key === "d") sendMove(1, 0);
-        });
-    </script>
 </body>
 </html>

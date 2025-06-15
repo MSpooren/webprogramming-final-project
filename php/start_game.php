@@ -22,8 +22,8 @@ $player2 = $gameState["players"]["2"];
 // Initialize game state
 $gameState = [
     "players" => [
-        "1" => array_merge($player1, ["x" => 0, "y" => 3, "status" => "normal"]),
-        "2" => array_merge($player2, ["x" => 6, "y" => 3, "status" => "normal"]),
+        "1" => array_merge($player1, ["x" => 0, "y" => 3, "status" => "normal", "movesThisTurn" => 0]),
+        "2" => array_merge($player2, ["x" => 6, "y" => 3, "status" => "normal", "movesThisTurn" => 0]),
     ],
     "turn" => 1,
     "mice" => [],
@@ -31,12 +31,12 @@ $gameState = [
     "couch_counter" => [
         "1" => 0,
         "2" => 0
-    ]
+    ],
     "couch" => [
         "x" => 3,
         "y" => 3
     ]
-];
+    ];
 
 // Add 3 mice, placed away from players and each other
 $occupied = [
