@@ -8,30 +8,8 @@ error_reporting(E_ALL);
 <head>
     <meta charset="UTF-8">
     <title>Cat Couch Clash</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            text-align: center;
-            font-family: sans-serif;
-            padding: 40px;
-        }
-        #title-screen, #setup-screen, #waiting-screen {
-            display: none;
-        }
-        #skin-selection img {
-            width: 48px;
-            height: 48px;
-            margin: 4px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            border-radius: 6px;
-        }
-        #skin-selection img.selected {
-            border-color: gold;
-            box-shadow: 0 0 5px gold;
-        }
-    </style>
 </head>
 <body>
 
@@ -43,21 +21,29 @@ error_reporting(E_ALL);
 
 <!-- Step 2: Player Setup -->
 <div id="setup-screen">
-    <h2>Enter your cat's info</h2>
-    <input type="text" id="name" placeholder="Your name" required><br><br>
+    <h2>Enter your cat's name!</h2>
+    <input type="text" id="name" placeholder="Cat Name :3" required><br><br>
 
-    <div id="skin-selection">
-        <?php
-        $images = glob("images/tile*.png");
-        foreach ($images as $img) {
-            $basename = basename($img, ".png");
-            echo "<img src='$img' alt='$basename' data-skin='$basename'>";
-        }
-        ?>
+    <div id="skin-selector-wrapper">
+        <button id="prev-skin">←</button>
+
+        <div id="skin-strip">
+            <?php
+            $images = glob("images/tile*.png");
+            foreach ($images as $img) {
+                $basename = basename($img, ".png");
+                echo "<img src='$img' class='skin-option' data-skin='$basename'>";
+            }
+            ?>
+        </div>
+
+        <button id="next-skin">→</button>
     </div>
-    <input type="hidden" id="skin"><br><br>
 
-    <button id="ready-btn">I'm Ready</button>
+    <p>Selected skin: <span id="selected-skin-name">None</span></p>
+    <input type="hidden" id="skin">
+
+    <button id="ready-btn">Ready!</button>
 </div>
 
 <!-- Step 3: Waiting -->
@@ -86,54 +72,64 @@ error_reporting(E_ALL);
     });
 
     $("#ready-btn").on("click", function () {
-    const playerName = $("#name").val().trim();
-    const selectedSkin = $("#skin").val();
+        const playerName = $("#name").val().trim();
+        const pickedSkin = $("#skin").val(); // ✅ renamed
 
-    if (!playerName || !selectedSkin) {
-        alert("Please enter a name and select a skin.");
-        return;
-    }
+        if (!playerName || !pickedSkin) {
+            alert("Please enter a name and select a skin.");
+            return;
+        }
 
-    $.getJSON("php/assign_player.php", function (data) {
-        localStorage.setItem("sessionId", data.sessionId);
-        localStorage.setItem("playerId", data.playerId);
+        $.getJSON("php/assign_player.php", function (data) {
+            localStorage.setItem("sessionId", data.sessionId);
+            localStorage.setItem("playerId", data.playerId);
 
-        $.ajax({
-            url: "php/save_players.php",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                sessionId: data.sessionId,
-                playerId: data.playerId,
-                name: playerName,
-                skin: selectedSkin
-            }),
-            success: function () {
-                $("#setup-screen").hide();
-                $("#waiting-screen").show();
-                waitForOpponent();
-            }
+            $.ajax({
+                url: "php/save_players.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    sessionId: data.sessionId,
+                    playerId: data.playerId,
+                    name: playerName,
+                    skin: pickedSkin // ✅ fixed
+                }),
+                success: function () {
+                    $("#setup-screen").hide();
+                    $("#waiting-screen").show();
+                    waitForOpponent();
+                }
+            });
         });
     });
-});
-
 
     function waitForOpponent() {
         const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
 
         const interval = setInterval(() => {
             $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
-                if (state.players["1"].name && state.players["2"].name) {
-                    clearInterval(interval); // ✅ stop polling
-                    window.location.href = "game.php";
+                const hasP1 = state.players["1"].name;
+                const hasP2 = state.players["2"].name;
+
+                if (hasP1 && hasP2) {
+                    clearInterval(interval);
+                    if (playerId === "2") {
+                        $.get("php/start_game.php?sessionId=" + sessionId, function () {
+                            window.location.href = "game.php";
+                        });
+                    } else {
+                        window.location.href = "game.php";
+                    }
                 } else {
-                    const missing = (!state.players["1"].name) ? "Player 1" : "Player 2";
+                    const missing = !hasP1 ? "Player 1" : "Player 2";
                     $("#status-msg").text("Waiting for " + missing + "...");
                 }
             });
         }, 1500);
-    }   
+    }
 </script>
+<script src="js/skin_carousel.js"></script>
 
 </body>
 </html>

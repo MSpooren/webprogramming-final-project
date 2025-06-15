@@ -1,26 +1,128 @@
 <?php
 // php/save_state.php
+
 $data = json_decode(file_get_contents('php://input'), true);
-$gameState = json_decode(file_get_contents('../data/game_state.json'), true);
 
-$playerId = $data['playerId'];
-$move = $data['move']; // ['x' => 1, 'y' => 0] for example
+$sessionId = $data['sessionId'] ?? null;
+$playerId = $data['playerId'] ?? null;
+$move = $data['move'] ?? null;
 
-$player = &$gameState["players"][$playerId];
-
-if ($gameState["turn"] != $playerId) {
-    echo json_encode(["error" => "Not your turn."]);
+if (!$sessionId || !$playerId || !$move) {
+    echo json_encode(["error" => "Missing data"]);
     exit;
 }
 
-// Apply move
-$player['x'] += $move['x'];
-$player['y'] += $move['y'];
+$filename = "../data/game_" . $sessionId . ".json";
+if (!file_exists($filename)) {
+    echo json_encode(["error" => "Game file not found"]);
+    exit;
+}
 
-// Update turn
-$gameState["turn"] = $playerId == "1" ? 2 : 1;
+$gameState = json_decode(file_get_contents($filename), true);
 
-file_put_contents('../data/game_state.json', json_encode($gameState, JSON_PRETTY_PRINT));
+// Check turn
+if ((int)$gameState["turn"] !== (int)$playerId) {
+    echo json_encode(["error" => "Not your turn"]);
+    exit;
+}
+
+// References
+$player = &$gameState["players"][$playerId];
+$opponentId = $playerId == "1" ? "2" : "1";
+$opponent = &$gameState["players"][$opponentId];
+
+// Proposed new coordinates
+$newX = $player['x'] + $move['x'];
+$newY = $player['y'] + $move['y'];
+
+// Check bounds
+if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
+    echo json_encode(["error" => "Move out of bounds"]);
+    exit;
+}
+
+// If moving into opponent — try push
+if ($opponent['x'] === $newX && $opponent['y'] === $newY) {
+    $pushX = $opponent['x'] + $move['x'];
+    $pushY = $opponent['y'] + $move['y'];
+
+    // Prevent pushing off-grid
+    if ($pushX < 0 || $pushX > 6 || $pushY < 0 || $pushY > 6) {
+        echo json_encode(["error" => "Can't push opponent off the board"]);
+        exit;
+    }
+
+    // Push the opponent
+    $opponent['x'] = $pushX;
+    $opponent['y'] = $pushY;
+}
+
+// Apply player's move
+$player['x'] = $newX;
+$player['y'] = $newY;
+
+// Initialize inventory if needed
+if (!isset($player['inventory'])) {
+    $player['inventory'] = [];
+}
+
+// ✅ Catch mouse only at new location — preserve others
+$remainingMice = [];
+foreach ($gameState['mice'] as $mouse) {
+    if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
+        $player['inventory'][] = 'item_' . rand(1, 3); // Player gets item
+        continue; // Don't keep this mouse
+    }
+    $remainingMice[] = $mouse;
+}
+$gameState['mice'] = $remainingMice;
+
+$occupied = [];
+foreach ($gameState['players'] as $p) {
+    $occupied[] = [$p['x'], $p['y']];
+}
+foreach ($gameState['mice'] as $m) {
+    $occupied[] = [$m['x'], $m['y']];
+}
+
+$updatedMice = [];
+foreach ($gameState['mice'] as $mouse) {
+    $dx = $dy = 0;
+    switch ($mouse['direction']) {
+        case 0: $dy = -1; break;
+        case 90: $dx = 1; break;
+        case 180: $dy = 1; break;
+        case 270: $dx = -1; break;
+    }
+
+    $nextX = $mouse['x'] + $dx;
+    $nextY = $mouse['y'] + $dy;
+
+    $blocked = false;
+    foreach ($occupied as $pos) {
+        if ($pos[0] == $nextX && $pos[1] == $nextY) {
+            $blocked = true;
+            break;
+        }
+    }
+
+    if ($nextX >= 0 && $nextX <= 6 && $nextY >= 0 && $nextY <= 6 && !$blocked) {
+        $mouse['x'] = $nextX;
+        $mouse['y'] = $nextY;
+    } else {
+        $mouse['direction'] = [0, 90, 180, 270][rand(0, 3)];
+    }
+
+    $updatedMice[] = $mouse;
+    $occupied[] = [$mouse['x'], $mouse['y']];
+}
+
+$gameState['mice'] = $updatedMice;
+
+// Switch turn
+$gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
+
+// Save new state
+file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
 ?>
-

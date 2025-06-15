@@ -1,0 +1,154 @@
+/* General layout and body */
+body {
+    text-align: center;
+    padding: 40px;
+    font-family: sans-serif;
+    background-color: #fdfdfd;
+}
+
+/* Shared title */
+h1, h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+/* Setup and waiting screens */
+#title-screen,
+#setup-screen,
+#waiting-screen {
+    display: none;
+}
+
+/* Turn status text */
+#turn-indicator {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* Grid layout for the game board */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(7, 50px);
+    grid-template-rows: repeat(7, 50px);
+    gap: 4px;
+    margin: 0 auto 30px;
+    justify-content: center;
+}
+
+/* Tiles in the game grid */
+.tile {
+    width: 50px;
+    height: 50px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    position: relative;
+    border-radius: 6px;
+}
+
+/* Cats and mice displayed inside tiles */
+.tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Cat skin selection in setup screen */
+#skin-selection img {
+    width: 48px;
+    height: 48px;
+    margin: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 6px;
+}
+
+#skin-selection img.selected {
+    border-color: gold;
+    box-shadow: 0 0 5px gold;
+}
+
+/* Movement instructions */
+#instructions {
+    font-size: 14px;
+    color: #666;
+    margin-top: 15px;
+}
+
+/* Button styling (optional) */
+button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    background-color: #f2f2f2;
+    border: 1px solid #aaa;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+#skin-selector-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+#skin-strip {
+    display: flex;
+    gap: 10px;
+    width: 160px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.skin-option {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.skin-option.active {
+    opacity: 1;
+    transform: scale(1.2);
+    display: inline-block;
+}
+
+.skin-option.side {
+    opacity: 0.8;
+    transform: scale(1);
+    display: inline-block;
+}
+
+@keyframes bobbing {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-2px); }
+}
+
+.player-indicator {
+    position: absolute;
+    top: 2px; 
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg); 
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid red; 
+    z-index: 10;
+    animation: bobbing 2s infinite ease-in-out;
+    pointer-events: none;
+}

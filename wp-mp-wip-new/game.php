@@ -4,17 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Cat Couch Clash - Game</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/game.js"></script>
     <script>
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
 
-    if (!sessionId || !playerId) {
-        alert("Session not found. Redirecting...");
-        window.location.href = "index.php";
-    }
+        if (!sessionId || !playerId) {
+            alert("Session not found. Redirecting...");
+            window.location.href = "index.php";
+        }
     </script>
 
     <style>
@@ -34,6 +34,14 @@
             line-height: 50px;
             font-weight: bold;
             font-size: 20px;
+            position: relative;
+        }
+        .tile img {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
@@ -43,23 +51,22 @@
 
     <div id="grid"></div>
 
-    <div>
-        <button onclick="sendMove(0, -1)">↑</button><br>
-        <button onclick="sendMove(-1, 0)">←</button>
-        <button onclick="sendMove(1, 0)">→</button><br>
-        <button onclick="sendMove(0, 1)">↓</button>
-    </div>
+    <p>Use W A S D to move your cat.</p>
+    <p id="inventory">Inventory: </p>
 
     <script>
-        const playerId = localStorage.getItem("playerId");
-        if (!playerId) {
-            alert("No player selected. Returning to main menu.");
-            window.location.href = "index.php";
-        }
-
         // Load game state every 2 seconds
         setInterval(loadGameState, 2000);
         loadGameState();
+
+        $(document).on("keydown", function (e) {
+            const key = e.key.toLowerCase();
+            console.log("Key pressed:", key);
+            if (key === "w") sendMove(0, -1);
+            if (key === "s") sendMove(0, 1);
+            if (key === "a") sendMove(-1, 0);
+            if (key === "d") sendMove(1, 0);
+        });
     </script>
 </body>
 </html>

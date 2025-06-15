@@ -10,9 +10,11 @@ $filename = "../data/game_" . $sessionId . ".json";
 
 header('Content-Type: application/json');
 
-if (file_exists($filename)) {
-    echo file_get_contents($filename);
-} else {
+if (!file_exists($filename)) {
     echo json_encode(["error" => "Game state not found."]);
+    exit;
 }
+
+$gameState = json_decode(file_get_contents($filename), true);
+echo json_encode($gameState);
 ?>
