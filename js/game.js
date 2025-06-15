@@ -125,6 +125,7 @@ function updateScoreboard(state) {
     $("#player2-score").text(n2 + ": " + p2);
 }
 
+
 // Store the moves for the current turn
 let moveBuffer = [];
 
@@ -195,30 +196,6 @@ $("#useLaser").on("click", function () {
     });
 });
 
-$("#useLaser").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
-
-    $.ajax({
-        url: "php/use_powerup.php",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            sessionId: sessionId,
-            playerId: playerId,
-            item: "laserpointer"
-        }),
-        success: function (res) {
-            if (res.success) {
-                alert("Laserpointer gebruikt!");
-                loadGameState(); // refresh zodat je meteen de move ziet
-            } else {
-                alert("Fout: " + res.error);
-            }
-        }
-    });
-});
-
 // Track keydown state and add delay to prevent rapid moves
 const keyDown = {};
 const keyDelay = 200; // milliseconds
@@ -243,6 +220,13 @@ $(document).on("keyup", function (e) {
     const key = e.key.toLowerCase();
     keyDown[key] = false;
 });
+
+$(document).ready(function () {
+  $('#useLaser').on('click', function () {
+    attack(currentPlayer, 'laserpointer');
+  });
+});
+
 
 // Auto-update the game every 2 seconds
 setInterval(loadGameState, 2000);
