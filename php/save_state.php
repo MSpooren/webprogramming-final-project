@@ -36,7 +36,7 @@ $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
 
 $data = json_decode(file_get_contents('php://input'), true);
-file_put_contents("log.txt", "Data received: " . json_encode($data) . "\n", FILE_APPEND);
+
 
 
 
