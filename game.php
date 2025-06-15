@@ -53,6 +53,8 @@
 
     <p>Use W A S D to move your cat.</p>
     <p id="inventory">Inventory: </p>
+    <button id="useLaser">Gebruik Laserpointer</button>
+
 
     <script>
         // Load game state every 2 seconds

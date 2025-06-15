@@ -1,0 +1,44 @@
+{
+    "players": {
+        "1": {
+            "name": "test1",
+            "x": 1,
+            "y": 2,
+            "skin": "tile000",
+            "status": "normal",
+            "last_move": "up",
+            "forced_direction": null,
+            "inventory": []
+        },
+        "2": {
+            "name": "test2",
+            "x": 4,
+            "y": 3,
+            "skin": "tile001",
+            "status": "normal",
+            "last_move": "up",
+            "forced_direction": null,
+            "inventory": [
+                "laserpointer"
+            ]
+        }
+    },
+    "turn": 1,
+    "mice": [
+        {
+            "x": 0,
+            "y": 6,
+            "direction": 270
+        },
+        {
+            "x": 5,
+            "y": 5,
+            "direction": 90
+        }
+    ],
+    "items": [],
+    "couch_counter": {
+        "1": 0,
+        "2": 0
+    }
+}

@@ -98,7 +98,7 @@ if (!isset($player['inventory'])) {
 $remainingMice = [];
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
-        $player['inventory'][] = 'item_' . rand(1, 3); // Player gets item
+        $player['inventory'][] = 'laserpointer';
         continue; // Don't keep this mouse
     }
     $remainingMice[] = $mouse;
