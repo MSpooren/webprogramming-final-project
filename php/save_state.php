@@ -15,17 +15,6 @@ if (!file_exists($filename)) {
 $gameState = json_decode(file_get_contents($filename), true);
 $player = &$gameState["players"][$playerId];
 
-if (isset($player['forced_direction']) && is_string($player['forced_direction'])) {
-    // Forceer move op basis van forced_direction
-    switch ($player['forced_direction']) {
-        case "right": $move = ['x' => 1, 'y' => 0]; break;
-        case "left":  $move = ['x' => -1, 'y' => 0]; break;
-        case "down":  $move = ['x' => 0, 'y' => 1]; break;
-        case "up":    $move = ['x' => 0, 'y' => -1]; break;
-        default: $move = ['x' => 0, 'y' => 0]; break;
-    }
-    $gameState["players"][$playerId]['forced_direction'] = null;
-}
 
 // Na deze forced-move-check kun je veilig controleren:
 if (!$sessionId || !$playerId || !$move || !isset($move['x']) || !isset($move['y'])) {
@@ -50,8 +39,6 @@ $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
 
-if (!isset($player['last_move'])) $player['last_move'] = null;
-if (!isset($player['forced_direction'])) $player['forced_direction'] = null;
 
 
 if ($move['x'] === 1) $player['last_move'] = "right";

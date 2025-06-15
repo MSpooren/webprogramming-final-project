@@ -158,6 +158,30 @@ $("#useLaser").on("click", function () {
     });
 });
 
+$("#useLaser").on("click", function () {
+    const sessionId = localStorage.getItem("sessionId");
+    const playerId = localStorage.getItem("playerId");
+
+    $.ajax({
+        url: "php/use_powerup.php",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            sessionId: sessionId,
+            playerId: playerId,
+            item: "laserpointer"
+        }),
+        success: function (res) {
+            if (res.success) {
+                alert("Laserpointer gebruikt!");
+                loadGameState(); // refresh zodat je meteen de move ziet
+            } else {
+                alert("Fout: " + res.error);
+            }
+        }
+    });
+});
+
 
 // WASD key movement
 $(document).on("keydown", function (e) {

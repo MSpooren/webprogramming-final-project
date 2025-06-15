@@ -5,8 +5,8 @@ $playerId = $data['playerId'] ?? null;
 $item = $data['item'] ?? null;
 
 $filename = "../data/game_" . $sessionId . ".json";
-if (!$sessionId || !$playerId || !$item || !file_exists($filename)) {
-    echo json_encode(["error" => "Ongeldige request"]);
+if (!file_exists($filename)) {
+    echo json_encode(["error" => "Game file not found"]);
     exit;
 }
 
@@ -15,25 +15,47 @@ $player = &$state['players'][$playerId];
 $opponentId = $playerId === "1" ? "2" : "1";
 $opponent = &$state['players'][$opponentId];
 
-// Check of speler dit item heeft
-$index = array_search($item, $player['inventory']);
-if ($index === false) {
-    echo json_encode(["error" => "Item niet in inventory"]);
+if (!in_array($item, $player['inventory'])) {
+    echo json_encode(["error" => "Item not in inventory"]);
     exit;
 }
 
-// Verwijder item uit inventory
-array_splice($player['inventory'], $index, 1);
+if ($item === "laserpointer") {
+    $direction = $player['last_move'] ?? null;
+    if (!$direction) {
+        echo json_encode(["error" => "No previous move direction found"]);
+        exit;
+    }
 
-// Zorg dat last_move bestaat
-if (!isset($player['last_move']) || !$player['last_move']) {
-    echo json_encode(["error" => "Geen vorige beweging bekend"]);
+    // Beweging bepalen
+    $dx = 0;
+    $dy = 0;
+    switch ($direction) {
+        case "up": $dy = -1; break;
+        case "down": $dy = 1; break;
+        case "left": $dx = -1; break;
+        case "right": $dx = 1; break;
+    }
+
+    // Nieuwe coördinaten bepalen
+    $newX = $opponent['x'] + $dx;
+    $newY = $opponent['y'] + $dy;
+
+    // Zorgen dat hij binnen het speelveld blijft (optioneel)
+    $newX = max(0, min(6, $newX)); // grid van 7x7
+    $newY = max(0, min(6, $newY));
+
+    $opponent['x'] = $newX;
+    $opponent['y'] = $newY;
+
+    // Verwijder item uit inventory
+    $player['inventory'] = array_filter($player['inventory'], function ($i) {
+        return $i !== "laserpointer";
+    });
+
+    file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
+    echo json_encode(["success" => true]);
     exit;
 }
 
-// Pas de forced_direction van de tegenstander aan
-$opponent['forced_direction'] = $player['last_move'];
-
-file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
-echo json_encode(["success" => true]);
-?>
+echo json_encode(["error" => "Unknown item"]);
