@@ -31,6 +31,15 @@ $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
 
+if (!isset($player['last_move'])) $player['last_move'] = null;
+if (!isset($player['forced_direction'])) $player['forced_direction'] = null;
+
+
+if ($move['x'] === 1) $player['last_move'] = "right";
+elseif ($move['x'] === -1) $player['last_move'] = "left";
+elseif ($move['y'] === 1) $player['last_move'] = "down";
+elseif ($move['y'] === -1) $player['last_move'] = "up";
+
 // Proposed new coordinates
 $newX = $player['x'] + $move['x'];
 $newY = $player['y'] + $move['y'];
@@ -125,4 +134,16 @@ $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
 // Save new state
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
+
+case "attack":
+    if ($incoming['item'] === "laserpointer") {
+        $opponentId = $incoming['player'] === "1" ? "2" : "1";
+        $state['players'][$opponentId]['forced_direction'] = $state['players'][$incoming['player']]['last_move'];
+        // Item verwijderen uit inventory kan hier ook
+        $response['success'] = true;
+    } else {
+        $response['error'] = "Onbekend item";
+    }
+    break;
+
 ?>

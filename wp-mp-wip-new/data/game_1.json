@@ -6,6 +6,10 @@
             "y": 3,
             "skin": "tile000",
             "status": "normal"
+            "forced_direction": null
+            "last_move": null
+
+
         },
         "2": {
             "name": "yellow",
@@ -13,6 +17,10 @@
             "y": 3,
             "skin": "tile003",
             "status": "normal"
+            "forced_direction": null
+            "last_move": null
+
+
         }
     },
     "turn": 1,
