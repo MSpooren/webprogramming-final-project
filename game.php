@@ -29,13 +29,16 @@
             width: 50px;
             height: 50px;
             background-color: #f4f4f4;
-            border: 1px solid #ccc;
+            border: none;
+            margin: 0;
+            padding: 0;
             text-align: center;
             line-height: 50px;
             font-weight: bold;
             font-size: 20px;
             position: relative;
 
+            /* Backrgound PNG for each tile */
             background-image: url('images/wooden_plank.png');
             background-size: cover;
             background-repeat: no-repeat;
