@@ -32,6 +32,10 @@ $gameState = [
         "1" => 0,
         "2" => 0
     ]
+    "couch" => [
+        "x" => 3,
+        "y" => 3
+    ]
 ];
 
 // Add 3 mice, placed away from players and each other

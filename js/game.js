@@ -49,6 +49,23 @@ function renderGrid(state) {
                     tile.append(container);
                 }
             }
+            // Render couch
+            if (state.couch && state.couch.x === x && state.couch.y === y) {
+                const couchImg = $("<img>")
+                    .attr("src", "images/couch.png")
+                    .css({
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                    })
+                    .on("error", function () {
+                        $(this).attr("src", "images/default.png");
+                    });
+                tile.append(couchImg);
+            }
 
             // Render mice
             if (state.mice) {
