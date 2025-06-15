@@ -35,6 +35,11 @@
             font-weight: bold;
             font-size: 20px;
             position: relative;
+
+            background-image: url('images/wooden_plank.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .tile img {
             width: 100%;
@@ -49,8 +54,15 @@
     <h2>Cat Couch Clash</h2>
     <p id="turn-indicator">Loading...</p>
 
-    <div id="grid"></div>
-    <div scoreboard>
+    <div id="grid">
+        <?php
+        for ($i = 0; $i < 49; $i++) {
+            echo "<div class='tile'></div>";
+        }
+        ?>
+    </div>
+
+    <div class="scoreboard">
         <h3>Scoreboard</h3>
         <p id="player1-score"></p>
         <p id="player2-score"></p>
