@@ -4,6 +4,7 @@ function loadGameState() {
         renderGrid(state);
         updateTurnIndicator(state.turn);
         updateInventory(state);
+        updateScoreboard(state);
     });
 }
 
@@ -49,6 +50,23 @@ function renderGrid(state) {
                     tile.append(container);
                 }
             }
+            // Render couch
+            if (state.couch && state.couch.x === x && state.couch.y === y) {
+                const couchImg = $("<img>")
+                    .attr("src", "images/couch.png")
+                    .css({
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                    })
+                    .on("error", function () {
+                        $(this).attr("src", "images/default.png");
+                    });
+                tile.append(couchImg);
+            }
 
             // Render mice
             if (state.mice) {
@@ -89,6 +107,16 @@ function updateInventory(state) {
     const player = state.players[playerId];
     const items = player.inventory || [];
     $("#inventory").text("Inventory: " + items.join(", "));
+}
+
+function updateScoreboard(state) {
+    // Defensive: fallback to 0 if undefined
+    const p1 = state.couch_counter && state.couch_counter["1"] ? state.couch_counter["1"] : 0;
+    const p2 = state.couch_counter && state.couch_counter["2"] ? state.couch_counter["2"] : 0;
+    const n1 = state.players && state.players["1"] && state.players["1"].name ? state.players["1"].name : "Player 1";
+    const n2 = state.players && state.players["2"] && state.players["2"].name ? state.players["2"].name : "Player 2";
+    $("#player1-score").text(n1 + ": " + p1);
+    $("#player2-score").text(n2 + ": " + p2);
 }
 
 function sendMove(dx, dy) {

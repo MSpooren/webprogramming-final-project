@@ -50,6 +50,11 @@
     <p id="turn-indicator">Loading...</p>
 
     <div id="grid"></div>
+    <div scoreboard>
+        <h3>Scoreboard</h3>
+        <p id="player1-score"></p>
+        <p id="player2-score"></p>
+    </div>
 
     <p>Use W A S D to move your cat.</p>
     <p id="inventory">Inventory: </p>

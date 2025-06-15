@@ -148,7 +148,6 @@ $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
 
-<<<<<<< HEAD:wp-mp-wip-new/php/save_state.php
 function moveCouch(&$gameState) {
     // Move couch to a random unoccupied position
     $occupied = [];
@@ -194,7 +193,4 @@ function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY) {
         moveCouch($gameState);
     }
 }
-=======
-
->>>>>>> 2f6cd225304ac532fdfbdaa3855001641a905c4f:php/save_state.php
 ?>
