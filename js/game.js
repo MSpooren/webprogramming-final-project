@@ -92,6 +92,7 @@ function updateInventory(state) {
 }
 
 function sendMove(dx, dy) {
+    console.log("sendMove called with:", dx, dy);
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
 
@@ -112,6 +113,10 @@ function sendMove(dx, dy) {
             }),
             success: function () {
                 loadGameState();
+            },
+            error: function(xhr, status, error) {
+        console.error("AJAX error:", status, error);
+        console.error("Response:", xhr.responseText);
             }
         });
     });
@@ -174,6 +179,8 @@ $(document).on("keydown", function (e) {
     if (key === "a") sendMove(-1, 0);
     if (key === "d") sendMove(1, 0);
 });
+
+
 
 // Auto-update the game every 2 seconds
 setInterval(loadGameState, 2000);

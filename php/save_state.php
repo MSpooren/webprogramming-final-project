@@ -1,6 +1,11 @@
 <?php
 // php/save_state.php
 
+file_put_contents("log.txt", "ok");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $data = json_decode(file_get_contents('php://input'), true);
 
 $sessionId = $data['sessionId'] ?? null;
@@ -15,12 +20,8 @@ if (!file_exists($filename)) {
 $gameState = json_decode(file_get_contents($filename), true);
 $player = &$gameState["players"][$playerId];
 
+$state['turn'] = $state['turn'] === 1 ? 2 : 1;
 
-// Na deze forced-move-check kun je veilig controleren:
-if (!$sessionId || !$playerId || !$move || !isset($move['x']) || !isset($move['y'])) {
-    echo json_encode(["error" => "Missing or invalid move data"]);
-    exit;
-}
 
 $filename = "../data/game_" . $sessionId . ".json";
 if (!file_exists($filename)) {
@@ -38,6 +39,9 @@ if ((int)$gameState["turn"] !== (int)$playerId) {
 $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
+
+$data = json_decode(file_get_contents('php://input'), true);
+file_put_contents("log.txt", "Data received: " . json_encode($data) . "\n", FILE_APPEND);
 
 
 
