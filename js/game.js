@@ -117,6 +117,31 @@ function sendMove(dx, dy) {
     });
 }
 
+$("#useLaser").on("click", function () {
+    const sessionId = localStorage.getItem("sessionId");
+    const playerId = localStorage.getItem("playerId");
+
+    $.ajax({
+        url: "php/use_powerup.php",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            sessionId: sessionId,
+            playerId: playerId,
+            item: "laserpointer"
+        }),
+        success: function (res) {
+            if (res.success) {
+                alert("Laserpointer geactiveerd! De tegenstander zal jouw richting op bewegen.");
+            } else {
+                alert("Fout bij powerup: " + res.error);
+            }
+            loadGameState();
+        }
+    });
+});
+
+
 // WASD key movement
 $(document).on("keydown", function (e) {
     const key = e.key.toLowerCase();
