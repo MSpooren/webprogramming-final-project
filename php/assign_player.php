@@ -22,7 +22,11 @@ while (true) {
             "turn" => 1,
             "mice" => [],
             "items" => [],
-            "couch_counter" => ["1" => 0, "2" => 0]
+            "couch_counter" => ["1" => 0, "2" => 0],
+            "couch" => [
+                "x" => 3,
+                "y" => 3
+            ]
         ];
         file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
         $playerId = 1;
