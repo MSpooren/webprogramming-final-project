@@ -29,22 +29,22 @@ error_reporting(E_ALL);
 
         <div id="skin-strip">
             <?php
-            $images = glob("images/tile*.png");
             $catTypes = [
-                "tile01_white.png" => "White Cat",
-                "tile02_tuxedo.png" => "Tuxedo Cat",
-                "tile03_ginger.png" => "Ginger Cat",
-                "tile04_tabby.png" => "Tabby Cat",
-                "tile05_siamese.png" => "Siamese Cat",
+                "tile01_white" => "White Cat",
+                "tile02_tuxedo" => "Tuxedo Cat",
+                "tile03_ginger" => "Ginger Cat",
+                "tile04_tabby" => "Tabby Cat",
+                "tile05_siamese" => "Siamese Cat",
             ];
+
+            $images = glob("images/tile*.png");
 
             foreach ($images as $img) {
                 $basename = basename($img, ".png");
                 $catName = isset($catTypes[$basename]) ? $catTypes[$basename] : "Unknown Cat";
 
                 echo "<div class='skin-container'>";
-                echo "<img src='$img' class='skin-option' data-skin='$basename'>";
-                echo "<span class='cat-name'>$catName</span>";
+                echo "<img src='$img' class='skin-option' data-skin='$basename' data-catname='$catName'>";
                 echo "</div>";
             }
             ?>
@@ -53,8 +53,10 @@ error_reporting(E_ALL);
         <button id="next-skin">→</button>
     </div>
 
-    <p>Selected skin: <span id="selected-skin-name">None</span></p>
-    <input type="hidden" id="skin">
+    <div id="selected-skin-label">
+        Selected skin: <span id="selected-skin-name">None</span>
+        <input type="hidden" id="skin" name="skin" value="">
+    </div>
 
     <button id="ready-btn">Ready!</button>
 </div>
