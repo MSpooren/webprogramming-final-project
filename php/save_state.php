@@ -91,14 +91,56 @@ if (!isset($player['inventory'])) {
 
 // ✅ Catch mouse only at new location — preserve others
 $remainingMice = [];
+$mouseCaught = false;
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
         $player['inventory'][] = 'laserpointer';
+        $mouseCaught = true;
         continue; // Don't keep this mouse
     }
     $remainingMice[] = $mouse;
 }
 $gameState['mice'] = $remainingMice;
+
+// Respawn a mouse if one was caught
+if ($mouseCaught) {
+    // Find all unoccupied positions
+    $occupiedPositions = [];
+    foreach ($gameState['players'] as $p) {
+        $occupiedPositions[] = [$p['x'], $p['y']];
+    }
+    foreach ($gameState['mice'] as $m) {
+        $occupiedPositions[] = [$m['x'], $m['y']];
+    }
+    if (isset($gameState['couch'])) {
+        $occupiedPositions[] = [$gameState['couch']['x'], $gameState['couch']['y']];
+    }
+
+    $freePositions = [];
+    for ($x = 0; $x < 7; $x++) {
+        for ($y = 0; $y < 7; $y++) {
+            $isOccupied = false;
+            foreach ($occupiedPositions as $pos) {
+                if ($pos[0] == $x && $pos[1] == $y) {
+                    $isOccupied = true;
+                    break;
+                }
+            }
+            if (!$isOccupied) {
+                $freePositions[] = [$x, $y];
+            }
+        }
+    }
+    if (count($freePositions) > 0) {
+        $newPos = $freePositions[array_rand($freePositions)];
+        $directions = [0, 90, 180, 270];
+        $gameState['mice'][] = [
+            'x' => $newPos[0],
+            'y' => $newPos[1],
+            'direction' => $directions[array_rand($directions)]
+        ];
+    }
+}
 
 $occupied = [];
 foreach ($gameState['players'] as $p) {
