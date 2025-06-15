@@ -22,19 +22,30 @@
             display: grid;
             grid-template-columns: repeat(7, 50px);
             grid-template-rows: repeat(7, 50px);
-            gap: 2px;
+            gap: 0;
+            padding: 0;
+            margin: 0;
             margin-bottom: 20px;
         }
         .tile {
             width: 50px;
             height: 50px;
             background-color: #f4f4f4;
-            border: 1px solid #ccc;
+            border: none;
+            margin: 0;
+            padding: 0;
             text-align: center;
             line-height: 50px;
             font-weight: bold;
             font-size: 20px;
             position: relative;
+            box-sizing: border-box;
+
+            /* Backrgound PNG for each tile */
+            background-image: url('images/wooden_plank.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .tile img {
             width: 100%;
@@ -49,8 +60,15 @@
     <h2>Cat Couch Clash</h2>
     <p id="turn-indicator">Loading...</p>
 
-    <div id="grid"></div>
-    <div scoreboard>
+    <div id="grid">
+        <?php
+        for ($i = 0; $i < 49; $i++) {
+            echo "<div class='tile'></div>";
+        }
+        ?>
+    </div>
+
+    <div class="scoreboard">
         <h3>Scoreboard</h3>
         <p id="player1-score"></p>
         <p id="player2-score"></p>
