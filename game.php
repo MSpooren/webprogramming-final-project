@@ -22,7 +22,9 @@
             display: grid;
             grid-template-columns: repeat(7, 50px);
             grid-template-rows: repeat(7, 50px);
-            gap: 2px;
+            gap: 0;
+            padding: 0;
+            margin: 0;
             margin-bottom: 20px;
         }
         .tile {
@@ -37,6 +39,7 @@
             font-weight: bold;
             font-size: 20px;
             position: relative;
+            box-sizing: border-box;
 
             /* Backrgound PNG for each tile */
             background-image: url('images/wooden_plank.png');
