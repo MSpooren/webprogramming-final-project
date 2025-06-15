@@ -61,6 +61,9 @@ if ($opponent['x'] === $newX && $opponent['y'] === $newY) {
 $player['x'] = $newX;
 $player['y'] = $newY;
 
+// Couch logic
+updateCouchPointsAndMove($gameState, $playerId, $newX, $newY);
+
 // Initialize inventory if needed
 if (!isset($player['inventory'])) {
     $player['inventory'] = [];
@@ -125,4 +128,50 @@ $gameState["turn"] = ((int)$playerId === 1) ? 2 : 1;
 // Save new state
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
+
+function moveCouch(&$gameState) {
+    // Move couch to a random unoccupied position
+    $occupied = [];
+    foreach ($gameState['players'] as $p) {
+        $occupied[] = [$p['x'], $p['y']];
+    }
+    foreach ($gameState['mice'] as $m) {
+        $occupied[] = [$m['x'], $m['y']];
+    }
+    // Prevent placing on current couch position
+    if (isset($gameState['couch'])) {
+        $occupied[] = [$gameState['couch']['x'], $gameState['couch']['y']];
+    }
+
+    $free = [];
+    for ($x = 0; $x < 7; $x++) {
+        for ($y = 0; $y < 7; $y++) {
+            $isOccupied = false;
+            foreach ($occupied as $pos) {
+                if ($pos[0] == $x && $pos[1] == $y) {
+                    $isOccupied = true;
+                    break;
+                }
+            }
+            if (!$isOccupied) {
+                $free[] = [$x, $y];
+            }
+        }
+    }
+    if (count($free) > 0) {
+        $newPos = $free[array_rand($free)];
+        $gameState['couch']['x'] = $newPos[0];
+        $gameState['couch']['y'] = $newPos[1];
+    }
+}
+
+function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY) {
+    if (isset($gameState['couch']) && $gameState['couch']['x'] === $newX && $gameState['couch']['y'] === $newY) {
+        if (!isset($gameState['couch_counter'][$playerId])) {
+            $gameState['couch_counter'][$playerId] = 0;
+        }
+        $gameState['couch_counter'][$playerId]++;
+        moveCouch($gameState);
+    }
+}
 ?>
