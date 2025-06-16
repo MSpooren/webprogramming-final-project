@@ -4,6 +4,54 @@ $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $item = $data['item'] ?? null;
 
+function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY)
+{
+    if (isset($gameState['couch']) && $gameState['couch']['x'] === $newX && $gameState['couch']['y'] === $newY) {
+        if (!isset($gameState['couch_counter'][$playerId])) {
+            $gameState['couch_counter'][$playerId] = 0;
+        }
+        $gameState['couch_counter'][$playerId]++;
+        moveCouch($gameState);
+    }
+}
+
+function moveCouch(&$gameState)
+{
+    // Move couch to a random unoccupied position
+    $occupied = [];
+    foreach ($gameState['players'] as $p) {
+        $occupied[] = [$p['x'], $p['y']];
+    }
+    foreach ($gameState['mice'] as $m) {
+        $occupied[] = [$m['x'], $m['y']];
+    }
+    // Prevent placing on current couch position
+    if (isset($gameState['couch'])) {
+        $occupied[] = [$gameState['couch']['x'], $gameState['couch']['y']];
+    }
+
+    $free = [];
+    for ($x = 0; $x < 7; $x++) {
+        for ($y = 0; $y < 7; $y++) {
+            $isOccupied = false;
+            foreach ($occupied as $pos) {
+                if ($pos[0] == $x && $pos[1] == $y) {
+                    $isOccupied = true;
+                    break;
+                }
+            }
+            if (!$isOccupied) {
+                $free[] = [$x, $y];
+            }
+        }
+    }
+    if (count($free) > 0) {
+        $newPos = $free[array_rand($free)];
+        $gameState['couch']['x'] = $newPos[0];
+        $gameState['couch']['y'] = $newPos[1];
+    }
+}
+
 $filename = "../data/game_" . $sessionId . ".json";
 if (!file_exists($filename)) {
     echo json_encode(["error" => "Game file not found"]);
@@ -42,6 +90,9 @@ if ($item === "laserpointer") {
     $newY = max(0, min(6, $newY));
     $opponent['x'] = $newX;
     $opponent['y'] = $newY;
+
+    updateCouchPointsAndMove($state, $opponentId, $newX, $newY);
+
 
     $opponent['mirror_move'] = [
         'dx' => $dx,
@@ -82,14 +133,10 @@ elseif ($item === "wool") {
     $player['x'] = $newX;
     $player['y'] = $newY;
 
+    updateCouchPointsAndMove($state, $playerId, $player['x'], $player['y']);
+
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
-
-    if ($player['movesThisTurn'] >= 2) {
-        $state['turn'] = ($playerId === "1") ? "2" : "1";
-        $state['players']["1"]['movesThisTurn'] = 0;
-        $state['players']["2"]['movesThisTurn'] = 0;
-    }
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
@@ -107,9 +154,8 @@ elseif ($item === "milk") {
     $dx = $direction['x'];
     $dy = $direction['y'];
 
-    // Alleen diagonale beweging van 1 vakje
-    if (!(abs($dx) === 1 && abs($dy) === 1)) {
-        echo json_encode(["error" => "Melk laat je alleen 1 vakje diagonaal bewegen"]);
+    if (!((abs($dx) === 1 && abs($dy) === 1))) {
+        echo json_encode(["error" => "Beweging moet diagonaal zijn"]);
         exit;
     }
 
@@ -124,19 +170,21 @@ elseif ($item === "milk") {
     $player['x'] = $newX;
     $player['y'] = $newY;
 
+    updateCouchPointsAndMove($state, $playerId, $newX, $newY);
+
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "milk"));
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
-    if ($player['movesThisTurn'] >= 2) {
-        $state['turn'] = ($playerId === "1") ? "2" : "1";
-        $state['players']["1"]['movesThisTurn'] = 0;
-        $state['players']["2"]['movesThisTurn'] = 0;
-    }
+    // 🟢 Wissel de beurt hier handmatig
+    $state['turn'] = $state['turn'] === "1" ? "2" : "1";
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
     exit;
 }
+
+
+
 
 
 echo json_encode(["error" => "Unknown item"]);

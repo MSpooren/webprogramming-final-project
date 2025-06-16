@@ -227,60 +227,34 @@ $(document).ready(function () {
         });
     });
 
-    // Bind wool usage
-    $("#useWool").on("click", function () {
-        const sessionId = localStorage.getItem("sessionId");
-        const playerId = localStorage.getItem("playerId");
-        const direction = prompt("Kies richting: up, down, left, right");
+    $("#useWool").off("click").on("click", function () {
+    const sessionId = localStorage.getItem("sessionId");
+    const playerId = localStorage.getItem("playerId");
+    const direction = prompt("Welke richting? (up/down/left/right)");
 
-        let dx = 0, dy = 0;
-        switch (direction) {
-            case "up": dy = -3; break;
-            case "down": dy = 3; break;
-            case "left": dx = -3; break;
-            case "right": dx = 3; break;
-            default:
-                alert("Ongeldige richting");
-                return;
-        }
-
-        $.ajax({
-            url: "php/use_powerup.php",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ sessionId, playerId, item: "wool", direction: { x: dx, y: dy } }),
-            success: function (res) {
-                console.log("Wool response:", res);
-                alert(res.success ? "Kattenrol uitgevoerd!" : "Kattenrol gefaald: " + res.error);
-                loadGameState();
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX error:", status, error);
-            }
-        });
-    });
-
-    // Gebruik kattenrol (wool)
-$("#useWool").on("click", function () {
-    const dir = prompt("Welke richting? (bijv. up/down/left/right)");
     let dx = 0, dy = 0;
-    if (dir === "up") dy = -3;
-    else if (dir === "down") dy = 3;
-    else if (dir === "left") dx = -3;
-    else if (dir === "right") dx = 3;
-    else {
-        alert("Ongeldige richting");
-        return;
+    switch (direction) {
+        case "up": dy = -3; break;
+        case "down": dy = 3; break;
+        case "left": dx = -3; break;
+        case "right": dx = 3; break;
+        default:
+            alert("Ongeldige richting");
+            return;
     }
 
     $.ajax({
         url: "php/use_powerup.php",
         method: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ sessionId, playerId, item: "wool", direction: { x: dx, y: dy } }),
+        data: JSON.stringify({
+            sessionId,
+            playerId,
+            item: "wool",
+            direction: { x: dx, y: dy }
+        }),
         success: function (res) {
             console.log("Wool response:", res);
-            alert(res.success ? "Kattenrol uitgevoerd!" : "Kattenrol gefaald: " + res.error);
             loadGameState();
         },
         error: function (xhr, status, error) {
@@ -288,6 +262,7 @@ $("#useWool").on("click", function () {
         }
     });
 });
+
 
 // Gebruik melk (milk)
 $("#useMilk").on("click", function () {
@@ -309,7 +284,6 @@ $("#useMilk").on("click", function () {
         data: JSON.stringify({ sessionId, playerId, item: "milk", direction: { x: dx, y: dy } }),
         success: function (res) {
             console.log("Milk response:", res);
-            alert(res.success ? "Melk gebruikt!" : "Mislukt: " + res.error);
             loadGameState();
         },
         error: function (xhr, status, error) {
