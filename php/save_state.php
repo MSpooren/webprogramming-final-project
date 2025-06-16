@@ -24,6 +24,12 @@ if (!file_exists($filename)) {
 $gameState = json_decode(file_get_contents($filename), true);
 $player = &$gameState["players"][$playerId];
 
+// Block movement if game is over
+if (isset($gameState['winner'])) {
+    echo json_encode(["error" => "Game over"]);
+    exit;
+}
+
 $state['turn'] = $state['turn'] === 1 ? 2 : 1;
 
 
@@ -289,6 +295,19 @@ if ($player['movesThisTurn'] >= 2) {
             $gameState["turnCounter"] = 1;
         }
         $gameState["turnCounter"]++;
+
+        // Win condition: check after incrementing to 10
+        if ($gameState["turnCounter"] === 10) {
+            $p1 = $gameState["couch_counter"]["1"] ?? 0;
+            $p2 = $gameState["couch_counter"]["2"] ?? 0;
+            if ($p1 > $p2) {
+                $gameState["winner"] = 1;
+            } else if ($p2 > $p1) {
+                $gameState["winner"] = 2;
+            } else {
+                $gameState["winner"] = "draw";
+            }
+        }
     }
 }
 

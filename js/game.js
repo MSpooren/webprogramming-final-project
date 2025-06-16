@@ -11,7 +11,7 @@ function loadGameState() {
             localStorage.setItem("lastTurn", state.turn);
         }
         renderGrid(state);
-        updateTurnIndicator(state.turn);
+        updateTurnIndicator(state.turn, state);
         updateTurnCounter(state.turnCounter); 
         updateInventory(state);
         updateScoreboard(state);
@@ -127,7 +127,19 @@ function renderGrid(state) {
     }
 }
 
-function updateTurnIndicator(turnId) {
+function updateTurnIndicator(turnId, state) {
+    // Win condition display
+    if (state.winner) {
+        let msg = "";
+        if (state.winner === "draw") {
+            msg = "It's a draw!";
+        } else {
+            const winnerName = state.players?.[state.winner]?.name || `Player ${state.winner}`;
+            msg = winnerName + " wins!";
+        }
+        $("#turn-indicator").text(msg);
+        return;
+    }
     const playerId = localStorage.getItem("playerId");
     $("#turn-indicator").text(parseInt(playerId) === turnId ? "Your turn!" : "Waiting for opponent...");
 }
