@@ -1,0 +1,64 @@
+{
+    "players": {
+        "1": {
+            "name": "bert",
+            "x": 0,
+            "y": 3,
+            "skin": "tile01_white",
+            "status": "normal",
+            "movesThisTurn": 0
+        },
+        "2": {
+            "name": "bert",
+            "x": 6,
+            "y": 3,
+            "skin": "tile01_white",
+            "status": "normal",
+            "movesThisTurn": 0
+        }
+    },
+    "turn": 1,
+    "mice": [
+        {
+            "x": 2,
+            "y": 3,
+            "direction": 180
+        },
+        {
+            "x": 0,
+            "y": 1,
+            "direction": 180
+        },
+        {
+            "x": 0,
+            "y": 2,
+            "direction": 180
+        }
+    ],
+    "items": [],
+    "couch_counter": {
+        "1": 0,
+        "2": 0
+    },
+    "couch": {
+        "x": 3,
+        "y": 3
+    },
+    "obstacles": [
+        {
+            "type": "plant",
+            "x": 2,
+            "y": 4
+        },
+        {
+            "type": "lamp",
+            "x": 1,
+            "y": 0
+        },
+        {
+            "type": "lamp",
+            "x": 5,
+            "y": 3
+        }
+    ]
+}
