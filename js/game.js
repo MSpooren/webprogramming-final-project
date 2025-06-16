@@ -263,6 +263,24 @@ $(document).ready(function () {
         keyDown[e.key.toLowerCase()] = false;
     });
 
+    // Reset Game logic
+    $('#resetGame').click(function() {
+        const sessionId = localStorage.getItem("sessionId");
+        if (!sessionId) return;
+        if (!confirm('Are you sure you want to reset the game?')) return;
+        $.get('php/reset_game.php', { sessionId: sessionId }, function(response) {
+            let res;
+            try { res = JSON.parse(response); } catch (e) { res = {success:false,message:response}; }
+            alert(res.message);
+            if (res.success) {
+                // Remove session info and redirect to index
+                localStorage.removeItem("sessionId");
+                localStorage.removeItem("playerId");
+                window.location.href = "index.php";
+            }
+        });
+    });
+
     setInterval(loadGameState, 2000);
     loadGameState();
 });
