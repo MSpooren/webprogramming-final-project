@@ -26,6 +26,7 @@ $gameState = [
         "2" => array_merge($player2, ["x" => 6, "y" => 3, "status" => "normal", "movesThisTurn" => 0]),
     ],
     "turn" => 1,
+    "turnCounter" => 1,
     "mice" => [],
     "items" => [],
     "couch_counter" => [

@@ -282,6 +282,14 @@ if ($player['movesThisTurn'] >= 2) {
     // Reset movesThisTurn for both players
     $gameState["players"][$playerId]['movesThisTurn'] = 0;
     $gameState["players"][$opponentId]['movesThisTurn'] = 0;
+
+    // Increment turnCounter when switching from player 2 to player 1
+    if ((int)$playerId === 2 && $gameState["turn"] === 1) {
+        if (!isset($gameState["turnCounter"])) {
+            $gameState["turnCounter"] = 1;
+        }
+        $gameState["turnCounter"]++;
+    }
 }
 
 // Save new state

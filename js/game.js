@@ -12,6 +12,7 @@ function loadGameState() {
         }
         renderGrid(state);
         updateTurnIndicator(state.turn);
+        updateTurnCounter(state.turnCounter); 
         updateInventory(state);
         updateScoreboard(state);
     });
@@ -129,6 +130,10 @@ function renderGrid(state) {
 function updateTurnIndicator(turnId) {
     const playerId = localStorage.getItem("playerId");
     $("#turn-indicator").text(parseInt(playerId) === turnId ? "Your turn!" : "Waiting for opponent...");
+}
+
+function updateTurnCounter(turnCounter) {
+    $("#turn-counter").text("Turn: " + (turnCounter || 1));
 }
 
 function updateInventory(state) {
@@ -276,8 +281,9 @@ $(document).ready(function () {
                 // Remove session info and redirect to index
                 localStorage.removeItem("sessionId");
                 localStorage.removeItem("playerId");
-                window.location.href = "index.php";
+                
             }
+            window.location.href = "index.php";
         });
     });
 
