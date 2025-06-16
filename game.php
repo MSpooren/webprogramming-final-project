@@ -77,6 +77,21 @@
     <p>Use W A S D to move your cat.</p>
     <p id="inventory">Inventory: </p>
     <button id="useLaser">Gebruik Laserpointer</button>
+    <button id="resetGame">Reset Game</button>
 
+    <script>
+    $(document).ready(function() {
+        $('#resetGame').click(function() {
+            if (!sessionId) return;
+            if (!confirm('Are you sure you want to reset the game?')) return;
+            $.get('php/reset_game.php', { sessionId: sessionId }, function(response) {
+                let res;
+                try { res = JSON.parse(response); } catch (e) { res = {success:false,message:response}; }
+                alert(res.message);
+                if (res.success) location.reload();
+            });
+        });
+    });
+    </script>
 </body>
 </html>
