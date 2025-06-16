@@ -12,7 +12,7 @@ error_reporting(E_ALL);
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body class="index-background">
 
 <!-- Step 1: Title -->
 <div id="title-screen">
