@@ -162,6 +162,17 @@ if (isset($opponent['mirror_move'])) {
 // Couch logic
 updateCouchPointsAndMove($gameState, $playerId, $newX, $newY);
 
+// Win condition: first to 5 couch points
+if (
+    isset($gameState['couch_counter']['1']) && $gameState['couch_counter']['1'] >= 5
+) {
+    $gameState['winner'] = 1;
+} elseif (
+    isset($gameState['couch_counter']['2']) && $gameState['couch_counter']['2'] >= 5
+) {
+    $gameState['winner'] = 2;
+}
+
 // Initialize inventory if needed
 if (!isset($player['inventory'])) {
     $player['inventory'] = [];
@@ -294,27 +305,6 @@ if ($player['movesThisTurn'] >= 2) {
     // Reset movesThisTurn for both players
     $gameState["players"][$playerId]['movesThisTurn'] = 0;
     $gameState["players"][$opponentId]['movesThisTurn'] = 0;
-
-    // Increment turnCounter when switching from player 2 to player 1
-    if ((int)$playerId === 2 && $gameState["turn"] === 1) {
-        if (!isset($gameState["turnCounter"])) {
-            $gameState["turnCounter"] = 1;
-        }
-        $gameState["turnCounter"]++;
-
-        // Win condition: check after incrementing to 10
-        if ($gameState["turnCounter"] === 10) {
-            $p1 = $gameState["couch_counter"]["1"] ?? 0;
-            $p2 = $gameState["couch_counter"]["2"] ?? 0;
-            if ($p1 > $p2) {
-                $gameState["winner"] = 1;
-            } else if ($p2 > $p1) {
-                $gameState["winner"] = 2;
-            } else {
-                $gameState["winner"] = "draw";
-            }
-        }
-    }
 }
 
 // Save new state
