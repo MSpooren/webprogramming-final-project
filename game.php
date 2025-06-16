@@ -77,6 +77,8 @@
     <p>Use W A S D to move your cat.</p>
     <p id="inventory">Inventory: </p>
     <button id="useLaser">Gebruik Laserpointer</button>
+    <button id="useWool">Gebruik kattenrol (wool)</button>
+
     <button id="resetGame">Reset Game</button>
 
     <script>

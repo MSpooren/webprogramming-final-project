@@ -27,7 +27,6 @@ if ($item === "laserpointer") {
         exit;
     }
 
-    // Beweging bepalen
     $dx = 0;
     $dy = 0;
     switch ($direction) {
@@ -37,21 +36,59 @@ if ($item === "laserpointer") {
         case "right": $dx = 1; break;
     }
 
-    // Nieuwe coördinaten bepalen
     $newX = $opponent['x'] + $dx;
     $newY = $opponent['y'] + $dy;
-
-    // Zorgen dat hij binnen het speelveld blijft (optioneel)
-    $newX = max(0, min(6, $newX)); // grid van 7x7
+    $newX = max(0, min(6, $newX));
     $newY = max(0, min(6, $newY));
-
     $opponent['x'] = $newX;
     $opponent['y'] = $newY;
 
-    // Verwijder item uit inventory
-    $player['inventory'] = array_filter($player['inventory'], function ($i) {
+    $opponent['mirror_move'] = [
+        'dx' => $dx,
+        'dy' => $dy
+    ];
+
+    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "laserpointer"));
+
+    file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
+    echo json_encode(["success" => true]);
+    exit;
+}
+
+elseif ($item === "wool") {
+    $direction = $data['direction'] ?? null;
+
+    if (!$direction || !isset($direction['x']) || !isset($direction['y'])) {
+        echo json_encode(["error" => "Ongeldige richting"]);
+        exit;
+    }
+
+    $dx = $direction['x'];
+    $dy = $direction['y'];
+
+    if (!((abs($dx) === 3 && $dy === 0) || (abs($dy) === 3 && $dx === 0))) {
+        echo json_encode(["error" => "Kattenrol moet 3 vakjes in één richting zijn"]);
+        exit;
+    }
+
+    $newX = $player['x'] + $dx;
+    $newY = $player['y'] + $dy;
+
+    if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
+        echo json_encode(["error" => "Buiten het speelveld"]);
+        exit;
+    }
+
+    $player['x'] = $newX;
+    $player['y'] = $newY;
+
+    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
+    $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
+
+    // Remove laserpointer from inventory
+    $player['inventory'] = array_values(array_filter($player['inventory'], function ($i) {
         return $i !== "laserpointer";
-    });
+    }));
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);

@@ -1,7 +1,10 @@
+// game.js
+
+console.log("✅ game.js loaded");
+
 function loadGameState() {
     const sessionId = localStorage.getItem("sessionId");
     $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
-        // Reset move buffer if turn changed
         const lastTurn = localStorage.getItem("lastTurn");
         if (lastTurn === null || parseInt(lastTurn) !== state.turn) {
             moveBuffer = [];
@@ -22,7 +25,7 @@ function renderGrid(state) {
         for (let x = 0; x < 7; x++) {
             const tile = $("<div>").addClass("tile");
 
-            // Render players
+            // Players
             for (let pid in state.players) {
                 const p = state.players[pid];
                 if (p.x === x && p.y === y) {
@@ -56,7 +59,8 @@ function renderGrid(state) {
                     tile.append(container);
                 }
             }
-            // Render couch
+
+            // Couch
             if (state.couch && state.couch.x === x && state.couch.y === y) {
                 const couchImg = $("<img>")
                     .attr("src", "images/couch.png")
@@ -74,7 +78,30 @@ function renderGrid(state) {
                 tile.append(couchImg);
             }
 
-            // Render mice
+            // Obstacles
+            if (state.obstacles) {
+                for (let obj of state.obstacles) {
+                    if (obj.x === x && obj.y === y) {
+                        const objImg = $("<img>")
+                            .attr("src", "images/" + obj.type + ".png")
+                            .css({
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                zIndex: 1
+                            })
+                            .on("error", function () {
+                                $(this).attr("src", "images/default.png");
+                            });
+                        tile.append(objImg);
+                    }
+                }
+            }
+
+            // Mice
             if (state.mice) {
                 for (let m of state.mice) {
                     if (m.x === x && m.y === y) {
@@ -101,31 +128,24 @@ function renderGrid(state) {
 
 function updateTurnIndicator(turnId) {
     const playerId = localStorage.getItem("playerId");
-    if (parseInt(playerId) === turnId) {
-        $("#turn-indicator").text("Your turn!");
-    } else {
-        $("#turn-indicator").text("Waiting for opponent...");
-    }
+    $("#turn-indicator").text(parseInt(playerId) === turnId ? "Your turn!" : "Waiting for opponent...");
 }
 
 function updateInventory(state) {
     const playerId = localStorage.getItem("playerId");
-    const player = state.players[playerId];
-    const items = player.inventory || [];
+    const items = state.players[playerId].inventory || [];
     $("#inventory").text("Inventory: " + items.join(", "));
 }
 
 function updateScoreboard(state) {
-    // Defensive: fallback to 0 if undefined
-    const p1 = state.couch_counter && state.couch_counter["1"] ? state.couch_counter["1"] : 0;
-    const p2 = state.couch_counter && state.couch_counter["2"] ? state.couch_counter["2"] : 0;
-    const n1 = state.players && state.players["1"] && state.players["1"].name ? state.players["1"].name : "Player 1";
-    const n2 = state.players && state.players["2"] && state.players["2"].name ? state.players["2"].name : "Player 2";
+    const p1 = state.couch_counter?.["1"] || 0;
+    const p2 = state.couch_counter?.["2"] || 0;
+    const n1 = state.players?.["1"]?.name || "Player 1";
+    const n2 = state.players?.["2"]?.name || "Player 2";
     $("#player1-score").text(n1 + ": " + p1);
     $("#player2-score").text(n2 + ": " + p2);
 }
 
-// Store the moves for the current turn
 let moveBuffer = [];
 
 function sendMove(dx, dy) {
@@ -138,7 +158,6 @@ function sendMove(dx, dy) {
             return;
         }
 
-        // Get movesThisTurn from state
         const movesThisTurn = state.players[playerId].movesThisTurn || 0;
         if (movesThisTurn >= 2) {
             alert("You have already made 2 moves this turn.");
@@ -151,19 +170,12 @@ function sendMove(dx, dy) {
             url: "php/save_state.php",
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({
-                sessionId: sessionId,
-                playerId: playerId,
-                move: { x: dx, y: dy }
-            }),
+            data: JSON.stringify({ sessionId, playerId, move: { x: dx, y: dy } }),
             success: function () {
-                // After the second move, clear buffer and reload state
-                if (moveBuffer.length >= 2) {
-                    moveBuffer = [];
-                }
+                if (moveBuffer.length >= 2) moveBuffer = [];
                 loadGameState();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("AJAX error:", status, error);
                 console.error("Response:", xhr.responseText);
             }
@@ -171,79 +183,86 @@ function sendMove(dx, dy) {
     });
 }
 
-$("#useLaser").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
+$(document).ready(function () {
+    const keyDown = {};
+    const keyDelay = 200;
 
-    $.ajax({
-        url: "php/use_powerup.php",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            sessionId: sessionId,
-            playerId: playerId,
-            item: "laserpointer"
-        }),
-        success: function (res) {
-            if (res.success) {
-                alert("Laserpointer geactiveerd! De tegenstander zal jouw richting op bewegen.");
-            } else {
-                alert("Fout bij powerup: " + res.error);
+    // Bind laserpointer usage
+    $("#useLaser").on("click", function () {
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
+
+        console.log("🔫 Laserpointer button clicked", { sessionId, playerId });
+
+        $.ajax({
+            url: "php/use_powerup.php",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ sessionId, playerId, item: "laserpointer" }),
+            success: function (res) {
+                console.log("Laserpointer response:", res);
+                alert(res.success ? "Laserpointer activated!" : "Laserpointer failed: " + res.error);
+                loadGameState();
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", status, error);
             }
-            loadGameState();
-        }
+        });
     });
-});
 
-$("#useLaser").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
+    // Bind wool usage
+    $("#useWool").on("click", function () {
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
+        const direction = prompt("Kies richting: up, down, left, right");
 
-    $.ajax({
-        url: "php/use_powerup.php",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            sessionId: sessionId,
-            playerId: playerId,
-            item: "laserpointer"
-        }),
-        success: function (res) {
-            if (res.success) {
-                alert("Laserpointer gebruikt!");
-                loadGameState(); // refresh zodat je meteen de move ziet
-            } else {
-                alert("Fout: " + res.error);
+        let dx = 0, dy = 0;
+        switch (direction) {
+            case "up": dy = -3; break;
+            case "down": dy = 3; break;
+            case "left": dx = -3; break;
+            case "right": dx = 3; break;
+            default:
+                alert("Ongeldige richting");
+                return;
+        }
+
+        $.ajax({
+            url: "php/use_powerup.php",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ sessionId, playerId, item: "wool", direction: { x: dx, y: dy } }),
+            success: function (res) {
+                console.log("Wool response:", res);
+                alert(res.success ? "Kattenrol uitgevoerd!" : "Kattenrol gefaald: " + res.error);
+                loadGameState();
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", status, error);
             }
-        }
+        });
     });
+
+    // Movement
+    $(document).on("keydown", function (e) {
+        const key = e.key.toLowerCase();
+        if (keyDown[key]) return;
+        keyDown[key] = true;
+        console.log("Key pressed:", key);
+
+        let moved = false;
+        if (key === "w") { sendMove(0, -1); moved = true; }
+        if (key === "s") { sendMove(0, 1); moved = true; }
+        if (key === "a") { sendMove(-1, 0); moved = true; }
+        if (key === "d") { sendMove(1, 0); moved = true; }
+
+        if (moved) setTimeout(() => { keyDown[key] = false; }, keyDelay);
+    });
+
+    $(document).on("keyup", function (e) {
+        keyDown[e.key.toLowerCase()] = false;
+    });
+
+    setInterval(loadGameState, 2000);
+    loadGameState();
 });
-
-// Track keydown state and add delay to prevent rapid moves
-const keyDown = {};
-const keyDelay = 200; // milliseconds
-
-$(document).on("keydown", function (e) {
-    const key = e.key.toLowerCase();
-    if (keyDown[key]) return; // Already pressed or in delay, ignore
-    keyDown[key] = true;
-    console.log("Key pressed:", key);
-    let moved = false;
-    if (key === "w") { sendMove(0, -1); moved = true; }
-    if (key === "s") { sendMove(0, 1); moved = true; }
-    if (key === "a") { sendMove(-1, 0); moved = true; }
-    if (key === "d") { sendMove(1, 0); moved = true; }
-
-    if (moved) {
-        setTimeout(() => { keyDown[key] = false; }, keyDelay);
-    }
-});
-
-$(document).on("keyup", function (e) {
-    const key = e.key.toLowerCase();
-    keyDown[key] = false;
-});
-
-// Auto-update the game every 2 seconds
-setInterval(loadGameState, 2000);
-loadGameState();

@@ -36,14 +36,16 @@ $gameState = [
         "x" => 3,
         "y" => 3
     ]
-    ];
-
-// Add 3 mice, placed away from players and each other
-$occupied = [
-    [$gameState["players"]["1"]["x"], $gameState["players"]["1"]["y"]],
-    [$gameState["players"]["2"]["x"], $gameState["players"]["2"]["y"]]
 ];
 
+// Track occupied positions (players + couch)
+$occupied = [
+    [$gameState["players"]["1"]["x"], $gameState["players"]["1"]["y"]],
+    [$gameState["players"]["2"]["x"], $gameState["players"]["2"]["y"]],
+    [$gameState["couch"]["x"], $gameState["couch"]["y"]]
+];
+
+// Add 3 mice, placed away from occupied positions
 $mice = [];
 
 while (count($mice) < 3) {
@@ -69,6 +71,27 @@ while (count($mice) < 3) {
 }
 
 $gameState["mice"] = $mice;
+
+// Add 2–3 static objects (e.g., plant, lamp)
+function getRandomFreePosition($occupied) {
+    do {
+        $x = rand(0, 6);
+        $y = rand(0, 6);
+        $pos = [$x, $y];
+    } while (in_array($pos, $occupied));
+    return $pos;
+}
+
+$obstacleTypes = ['plant', 'lamp', 'lamp'];
+$obstacles = [];
+
+foreach ($obstacleTypes as $type) {
+    [$x, $y] = getRandomFreePosition($occupied);
+    $occupied[] = [$x, $y];
+    $obstacles[] = ['type' => $type, 'x' => $x, 'y' => $y];
+}
+
+$gameState["obstacles"] = $obstacles;
 
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo "Game started";
