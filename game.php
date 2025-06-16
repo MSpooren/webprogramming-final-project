@@ -76,6 +76,9 @@
     </div>
 
     <p>Use W A S D to move your cat.</p>
+
+    <p>Inventory:</p>
+    <ul id="inventory"></ul>
     
     <button id="useLaser">Gebruik Laserpointer</button>
     <button id="useWool">Gebruik kattenrol (wool)</button>

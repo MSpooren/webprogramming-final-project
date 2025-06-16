@@ -173,12 +173,11 @@ $mouseCaught = false;
 
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
-        // 50% kans om iets te krijgen
-        if (rand(0, 1) === 1) {
-            $possibleItems = ["laserpointer", "wool", "milk"];
-            $randomItem = $possibleItems[array_rand($possibleItems)];
-            $player['inventory'][] = $randomItem;
-        }
+        // Altijd een item geven bij het vangen van een muis
+        $possibleItems = ["laserpointer", "wool", "milk"];
+        $randomItem = $possibleItems[array_rand($possibleItems)];
+        $player['inventory'][] = $randomItem;
+
         $mouseCaught = true;
         continue; // Verwijder deze muis
     }
@@ -186,6 +185,7 @@ foreach ($gameState['mice'] as $mouse) {
 }
 
 $gameState['mice'] = $remainingMice;
+
 
 
 // Respawn a mouse if one was caught
