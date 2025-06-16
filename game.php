@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cat Couch Clash - Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/game.js"></script>
@@ -75,10 +76,10 @@
     </div>
 
     <p>Use W A S D to move your cat.</p>
-    <button id="useLaser">Gebruik Laserpointer</button>
-    <button id="useWool">Gebruik kattenrol (wool)</button>
-    <button id="useMilk">Gebruik Melk</button>
+    <button class="pixel-button" id="useLaser">Gebruik Laserpointer</button>
+    <button class="pixel-button" id="useWool">Gebruik kattenrol (wool)</button>
+    <button class="pixel-button" id="useMilk">Gebruik Melk</button>
     <br>
-    <button id="resetGame">Reset Game</button>
+    <button class="pixel-button" id="resetGame">Reset Game</button>
 </body>
 </html>
