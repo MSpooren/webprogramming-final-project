@@ -85,10 +85,11 @@ elseif ($item === "wool") {
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
-    // Remove laserpointer from inventory
-    $player['inventory'] = array_values(array_filter($player['inventory'], function ($i) {
-        return $i !== "laserpointer";
-    }));
+    if ($player['movesThisTurn'] >= 2) {
+        $state['turn'] = ($playerId === "1") ? "2" : "1";
+        $state['players']["1"]['movesThisTurn'] = 0;
+        $state['players']["2"]['movesThisTurn'] = 0;
+    }
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
