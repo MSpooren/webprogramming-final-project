@@ -9,6 +9,7 @@ error_reporting(E_ALL);
     <meta charset="UTF-8">
     <title>Cat Couch Clash</title>
     <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -16,7 +17,7 @@ error_reporting(E_ALL);
 <!-- Step 1: Title -->
 <div id="title-screen">
     <h1>🐾 Cat Couch Clash 🛋️</h1>
-    <button id="start-btn">Start</button>
+    <button class="pixel-button" id="start-btn">Start</button>
 </div>
 
 <!-- Step 2: Player Setup -->
@@ -25,7 +26,7 @@ error_reporting(E_ALL);
     <input type="text" id="name" placeholder="Cat Name :3" required><br><br>
 
     <div id="skin-selector-wrapper">
-        <button id="prev-skin">←</button>
+        <button class="pixel-button" id="prev-skin">←</button>
 
         <div id="skin-strip">
             <?php
@@ -50,7 +51,7 @@ error_reporting(E_ALL);
             ?>
         </div>
 
-        <button id="next-skin">→</button>
+        <button class="pixel-button" id="next-skin">→</button>
     </div>
 
     <div id="selected-skin-label">
@@ -58,7 +59,7 @@ error_reporting(E_ALL);
         <input type="hidden" id="skin" name="skin" value="">
     </div>
 
-    <button id="ready-btn">Ready!</button>
+    <button class="pixel-button" id="ready-btn">Ready!</button>
 </div>
 
 <!-- Step 3: Waiting -->
