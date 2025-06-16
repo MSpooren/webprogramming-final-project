@@ -27,7 +27,7 @@ if ($item === "laserpointer") {
         exit;
     }
 
-    // Beweging bepalen
+    // Determine dx/dy from last_move
     $dx = 0;
     $dy = 0;
     switch ($direction) {
@@ -37,21 +37,16 @@ if ($item === "laserpointer") {
         case "right": $dx = 1; break;
     }
 
-    // Nieuwe coördinaten bepalen
-    $newX = $opponent['x'] + $dx;
-    $newY = $opponent['y'] + $dy;
+    // Set mirror move on opponent
+    $opponent['mirror_move'] = [
+        'dx' => $dx,
+        'dy' => $dy
+    ];
 
-    // Zorgen dat hij binnen het speelveld blijft (optioneel)
-    $newX = max(0, min(6, $newX)); // grid van 7x7
-    $newY = max(0, min(6, $newY));
-
-    $opponent['x'] = $newX;
-    $opponent['y'] = $newY;
-
-    // Verwijder item uit inventory
-    $player['inventory'] = array_filter($player['inventory'], function ($i) {
+    // Remove laserpointer from inventory
+    $player['inventory'] = array_values(array_filter($player['inventory'], function ($i) {
         return $i !== "laserpointer";
-    });
+    }));
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
