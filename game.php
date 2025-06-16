@@ -1,6 +1,7 @@
 <!-- game.php -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Cat Couch Clash - Game</title>
@@ -28,6 +29,7 @@
             margin: 0;
             margin-bottom: 20px;
         }
+
         .tile {
             width: 50px;
             height: 50px;
@@ -48,6 +50,7 @@
             background-repeat: no-repeat;
             background-position: center;
         }
+
         .tile img {
             width: 100%;
             height: 100%;
@@ -57,18 +60,21 @@
         }
     </style>
 </head>
+
 <body class="game-background">
     <h2>Cat Couch Clash</h2>
     <p id="turn-indicator">Loading...</p>
-    
-    <div id="grid">
-        <?php
-        for ($i = 0; $i < 49; $i++) {
-            echo "<div class='tile'></div>";
-        }
-        ?>
-    </div>
 
+    <div id="grid-wrapper">
+        <div id="grid">
+            <?php
+            for ($i = 0; $i < 49; $i++) {
+                echo "<div class='tile'></div>";
+            }
+            ?>
+        </div>
+    </div>
+    
     <div class="scoreboard">
         <h3>Scoreboard</h3>
         <p id="player1-score"></p>
@@ -82,4 +88,5 @@
     <br>
     <button class="pixel-button" id="resetGame">Reset Game</button>
 </body>
+
 </html>
