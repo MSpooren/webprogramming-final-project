@@ -1,0 +1,72 @@
+{
+    "players": {
+        "1": {
+            "name": "test1",
+            "x": 4,
+            "y": 1,
+            "skin": "tile01_white",
+            "status": "normal",
+            "movesThisTurn": 0,
+            "last_move": "up",
+            "inventory": [],
+            "mirror_move": {
+                "dx": -1,
+                "dy": 0
+            }
+        },
+        "2": {
+            "name": "test2",
+            "x": 1,
+            "y": 5,
+            "skin": "tile04_tabby",
+            "status": "normal",
+            "movesThisTurn": 1,
+            "last_move": "left",
+            "inventory": []
+        }
+    },
+    "turn": 2,
+    "mice": [
+        {
+            "x": 6,
+            "y": 2,
+            "direction": 0
+        },
+        {
+            "x": 0,
+            "y": 0,
+            "direction": 90
+        },
+        {
+            "x": 6,
+            "y": 1,
+            "direction": 180
+        }
+    ],
+    "items": [],
+    "couch_counter": {
+        "1": 0,
+        "2": 0
+    },
+    "couch": {
+        "x": 3,
+        "y": 3
+    },
+    "obstacles": [
+        {
+            "type": "plant",
+            "x": 0,
+            "y": 4
+        },
+        {
+            "type": "lamp",
+            "x": 5,
+            "y": 4
+        },
+        {
+            "type": "lamp",
+            "x": 4,
+            "y": 4
+        }
+    ]
+}

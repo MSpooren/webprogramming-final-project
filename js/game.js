@@ -184,6 +184,9 @@ function sendMove(dx, dy) {
 }
 
 $(document).ready(function () {
+    const keyDown = {};
+    const keyDelay = 200;
+
     // Bind laserpointer usage
     $("#useLaser").on("click", function () {
         const sessionId = localStorage.getItem("sessionId");
@@ -207,10 +210,40 @@ $(document).ready(function () {
         });
     });
 
-    // Movement
-    const keyDown = {};
-    const keyDelay = 200;
+    // Bind wool usage
+    $("#useWool").on("click", function () {
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
+        const direction = prompt("Kies richting: up, down, left, right");
 
+        let dx = 0, dy = 0;
+        switch (direction) {
+            case "up": dy = -3; break;
+            case "down": dy = 3; break;
+            case "left": dx = -3; break;
+            case "right": dx = 3; break;
+            default:
+                alert("Ongeldige richting");
+                return;
+        }
+
+        $.ajax({
+            url: "php/use_powerup.php",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ sessionId, playerId, item: "wool", direction: { x: dx, y: dy } }),
+            success: function (res) {
+                console.log("Wool response:", res);
+                alert(res.success ? "Kattenrol uitgevoerd!" : "Kattenrol gefaald: " + res.error);
+                loadGameState();
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", status, error);
+            }
+        });
+    });
+
+    // Movement
     $(document).on("keydown", function (e) {
         const key = e.key.toLowerCase();
         if (keyDown[key]) return;
