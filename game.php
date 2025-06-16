@@ -57,7 +57,7 @@
         }
     </style>
 </head>
-<body>
+<body class="game-background">
     <h2>Cat Couch Clash</h2>
     <p id="turn-indicator">Loading...</p>
     
