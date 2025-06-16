@@ -76,11 +76,10 @@
     </div>
 
     <p>Use W A S D to move your cat.</p>
-    <div id="inventory">
+    
     <button id="useLaser">Gebruik Laserpointer</button>
     <button id="useWool">Gebruik kattenrol (wool)</button>
     <button id="useMilk">Gebruik Melk</button>
-    </div>
     <button id="resetGame">Reset Game</button>
 </body>
 </html>
