@@ -170,17 +170,23 @@ if (!isset($player['inventory'])) {
 // Catch mouse only at new location — preserve others
 $remainingMice = [];
 $mouseCaught = false;
+
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
-        $lastDrop = end($player['inventory']);
-        $nextDrop = ($lastDrop === "laserpointer") ? "wool" : "laserpointer";
-        $player['inventory'][] = $nextDrop;
+        // 50% kans om iets te krijgen
+        if (rand(0, 1) === 1) {
+            $possibleItems = ["laserpointer", "wool", "milk"];
+            $randomItem = $possibleItems[array_rand($possibleItems)];
+            $player['inventory'][] = $randomItem;
+        }
         $mouseCaught = true;
-        continue; // Don't keep this mouse
+        continue; // Verwijder deze muis
     }
     $remainingMice[] = $mouse;
 }
+
 $gameState['mice'] = $remainingMice;
+
 
 // Respawn a mouse if one was caught
 if ($mouseCaught) {

@@ -96,4 +96,47 @@ elseif ($item === "wool") {
     exit;
 }
 
+elseif ($item === "milk") {
+    $direction = $data['direction'] ?? null;
+
+    if (!$direction || !isset($direction['x']) || !isset($direction['y'])) {
+        echo json_encode(["error" => "Ongeldige richting"]);
+        exit;
+    }
+
+    $dx = $direction['x'];
+    $dy = $direction['y'];
+
+    // Alleen diagonale beweging van 1 vakje
+    if (!(abs($dx) === 1 && abs($dy) === 1)) {
+        echo json_encode(["error" => "Melk laat je alleen 1 vakje diagonaal bewegen"]);
+        exit;
+    }
+
+    $newX = $player['x'] + $dx;
+    $newY = $player['y'] + $dy;
+
+    if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
+        echo json_encode(["error" => "Buiten het speelveld"]);
+        exit;
+    }
+
+    $player['x'] = $newX;
+    $player['y'] = $newY;
+
+    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "milk"));
+    $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
+
+    if ($player['movesThisTurn'] >= 2) {
+        $state['turn'] = ($playerId === "1") ? "2" : "1";
+        $state['players']["1"]['movesThisTurn'] = 0;
+        $state['players']["2"]['movesThisTurn'] = 0;
+    }
+
+    file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
+    echo json_encode(["success" => true]);
+    exit;
+}
+
+
 echo json_encode(["error" => "Unknown item"]);

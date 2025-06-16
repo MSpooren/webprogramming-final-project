@@ -260,6 +260,64 @@ $(document).ready(function () {
         });
     });
 
+    // Gebruik kattenrol (wool)
+$("#useWool").on("click", function () {
+    const dir = prompt("Welke richting? (bijv. up/down/left/right)");
+    let dx = 0, dy = 0;
+    if (dir === "up") dy = -3;
+    else if (dir === "down") dy = 3;
+    else if (dir === "left") dx = -3;
+    else if (dir === "right") dx = 3;
+    else {
+        alert("Ongeldige richting");
+        return;
+    }
+
+    $.ajax({
+        url: "php/use_powerup.php",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ sessionId, playerId, item: "wool", direction: { x: dx, y: dy } }),
+        success: function (res) {
+            console.log("Wool response:", res);
+            alert(res.success ? "Kattenrol uitgevoerd!" : "Kattenrol gefaald: " + res.error);
+            loadGameState();
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX error:", status, error);
+        }
+    });
+});
+
+// Gebruik melk (milk)
+$("#useMilk").on("click", function () {
+    const dir = prompt("Welke diagonaal? (↘, ↙, ↖, ↗)");
+    let dx = 0, dy = 0;
+    if (dir === "↘") { dx = 1; dy = 1; }
+    else if (dir === "↙") { dx = -1; dy = 1; }
+    else if (dir === "↖") { dx = -1; dy = -1; }
+    else if (dir === "↗") { dx = 1; dy = -1; }
+    else {
+        alert("Ongeldige richting");
+        return;
+    }
+
+    $.ajax({
+        url: "php/use_powerup.php",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ sessionId, playerId, item: "milk", direction: { x: dx, y: dy } }),
+        success: function (res) {
+            console.log("Milk response:", res);
+            alert(res.success ? "Melk gebruikt!" : "Mislukt: " + res.error);
+            loadGameState();
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX error:", status, error);
+        }
+    });
+});
+
     // Movement
     $(document).on("keydown", function (e) {
         const key = e.key.toLowerCase();
