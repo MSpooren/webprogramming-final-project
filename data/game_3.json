@@ -1,42 +1,44 @@
 {
     "players": {
         "1": {
-            "name": "test1",
-            "x": 3,
-            "y": 1,
-            "skin": "tile01_white",
+            "name": "test2",
+            "x": 1,
+            "y": 2,
+            "skin": "tile02_tuxedo",
             "status": "normal",
             "movesThisTurn": 0,
-            "last_move": "up",
-            "inventory": []
+            "last_move": "left",
+            "inventory": [
+                "laserpointer"
+            ]
         },
         "2": {
-            "name": "test2",
-            "x": 2,
-            "y": 5,
-            "skin": "tile04_tabby",
+            "name": "test1",
+            "x": 6,
+            "y": 3,
+            "skin": "tile05_siamese",
             "status": "normal",
-            "movesThisTurn": 0,
-            "last_move": "right",
+            "movesThisTurn": 2,
+            "last_move": "down",
             "inventory": []
         }
     },
-    "turn": 1,
+    "turn": 2,
     "mice": [
         {
-            "x": 6,
-            "y": 2,
+            "x": 0,
+            "y": 0,
             "direction": 180
         },
         {
-            "x": 1,
-            "y": 0,
-            "direction": 90
+            "x": 0,
+            "y": 6,
+            "direction": 180
         },
         {
-            "x": 6,
+            "x": 2,
             "y": 1,
-            "direction": 90
+            "direction": 0
         }
     ],
     "items": [],
@@ -51,18 +53,18 @@
     "obstacles": [
         {
             "type": "plant",
-            "x": 0,
-            "y": 4
+            "x": 3,
+            "y": 5
         },
         {
             "type": "lamp",
-            "x": 5,
-            "y": 4
+            "x": 1,
+            "y": 6
         },
         {
             "type": "lamp",
             "x": 4,
-            "y": 4
+            "y": 5
         }
     ]
 }

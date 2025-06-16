@@ -166,7 +166,9 @@ $remainingMice = [];
 $mouseCaught = false;
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
-        $player['inventory'][] = 'laserpointer';
+        $lastDrop = end($player['inventory']);
+        $nextDrop = ($lastDrop === "laserpointer") ? "wool" : "laserpointer";
+        $player['inventory'][] = $nextDrop;
         $mouseCaught = true;
         continue; // Don't keep this mouse
     }
