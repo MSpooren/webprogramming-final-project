@@ -4,6 +4,11 @@ $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $item = $data['item'] ?? null;
 
+if ((string)$state["turn"] !== (string)$playerId) {
+    echo json_encode(["success" => false, "error" => "It is not your turn."]);
+    exit;
+}
+
 function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY)
 {
     if (isset($gameState['couch']) && $gameState['couch']['x'] === $newX && $gameState['couch']['y'] === $newY) {
@@ -173,10 +178,15 @@ elseif ($item === "milk") {
     updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "milk"));
+
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
-    // 🟢 Wissel de beurt hier handmatig
-    $state['turn'] = $state['turn'] === "1" ? "2" : "1";
+    if ($player['movesThisTurn'] >= 2) {
+    $state['turn'] = ($playerId === "1") ? "2" : "1";
+    $state['players']["1"]['movesThisTurn'] = 0;
+    $state['players']["2"]['movesThisTurn'] = 0;
+}
+
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);

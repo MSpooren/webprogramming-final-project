@@ -264,33 +264,48 @@ $(document).ready(function () {
 });
 
 
-// Gebruik melk (milk)
 $("#useMilk").on("click", function () {
-    const dir = prompt("Welke diagonaal? (↘, ↙, ↖, ↗)");
-    let dx = 0, dy = 0;
-    if (dir === "↘") { dx = 1; dy = 1; }
-    else if (dir === "↙") { dx = -1; dy = 1; }
-    else if (dir === "↖") { dx = -1; dy = -1; }
-    else if (dir === "↗") { dx = 1; dy = -1; }
-    else {
-        alert("Ongeldige richting");
-        return;
-    }
+    const sessionId = localStorage.getItem("sessionId");
+    const playerId = localStorage.getItem("playerId");
 
-    $.ajax({
-        url: "php/use_powerup.php",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ sessionId, playerId, item: "milk", direction: { x: dx, y: dy } }),
-        success: function (res) {
-            console.log("Milk response:", res);
-            loadGameState();
-        },
-        error: function (xhr, status, error) {
-            console.error("AJAX error:", status, error);
+    $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+        if (state.turn.toString() !== playerId.toString()) {
+            alert("It is not your turn!");
+            return;
         }
+
+        const dir = prompt("Welke diagonaal? (↘, ↙, ↖, ↗)");
+        let dx = 0, dy = 0;
+        if (dir === "↘") { dx = 1; dy = 1; }
+        else if (dir === "↙") { dx = -1; dy = 1; }
+        else if (dir === "↖") { dx = -1; dy = -1; }
+        else if (dir === "↗") { dx = 1; dy = -1; }
+        else {
+            alert("Ongeldige richting");
+            return;
+        }
+
+        $.ajax({
+            url: "php/use_powerup.php",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                sessionId,
+                playerId,
+                item: "milk",
+                direction: { x: dx, y: dy }
+            }),
+            success: function (res) {
+                alert(res.success ? "Melk gebruikt!" : "Melk gefaald: " + res.error);
+                loadGameState();
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", status, error);
+            }
+        });
     });
 });
+
 
     // Movement
     $(document).on("keydown", function (e) {

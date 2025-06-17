@@ -83,7 +83,6 @@
 
     <p>Use W A S D to move your cat.</p>
 
-    <p>Inventory:</p>
     <ul id="inventory"></ul>
 
     <button class="pixel-button" id="useLaser">Gebruik Laserpointer</button>
