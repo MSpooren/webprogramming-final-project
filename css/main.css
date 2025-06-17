@@ -108,7 +108,7 @@ h2 {
     margin-bottom: 20px;
     font-size: 18px;
     font-weight: bold;
-    color: #444;
+    color: #a50000;
 }
 
 /* Game board grid layour using CSS grid */
@@ -201,7 +201,7 @@ h2 {
 /* Movement instructions */
 #instructions {
     font-size: 14px;
-    color: #666;
+    color: #666666;
     margin-top: 15px;
 }
 
