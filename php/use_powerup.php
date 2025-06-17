@@ -159,23 +159,70 @@ elseif ($item === "wool") {
         exit;
     }
 
-     if (isObstacleAt($state, $newX, $newY)) {
-    echo json_encode(["error" => "You can't move into an object!"]);
-    exit;
+    if (isObstacleAt($state, $newX, $newY)) {
+        echo json_encode(["error" => "You can't move into an object!"]);
+        exit;
     }
 
+    // Check if opponent is on new spot
+    if ($opponent['x'] === $newX && $opponent['y'] === $newY) {
+        // Vind alle vrije vakjes rondom
+        $freeSpots = [];
+        for ($dxo = -1; $dxo <= 1; $dxo++) {
+            for ($dyo = -1; $dyo <= 1; $dyo++) {
+                if ($dxo === 0 && $dyo === 0) continue;
+                $ox = $newX + $dxo;
+                $oy = $newY + $dyo;
+
+                if ($ox < 0 || $ox > 6 || $oy < 0 || $oy > 6) continue;
+
+                if (
+                    !isObstacleAt($state, $ox, $oy) &&
+                    !($player['x'] === $ox && $player['y'] === $oy)
+                ) {
+                    $freeSpots[] = ['x' => $ox, 'y' => $oy];
+                }
+            }
+        }
+
+        if (!empty($freeSpots)) {
+            $chosen = $freeSpots[array_rand($freeSpots)];
+            $opponent['x'] = $chosen['x'];
+            $opponent['y'] = $chosen['y'];
+
+            $state['turn'] = ($playerId === "1") ? "2" : "1";
+            $state['players']["1"]['movesThisTurn'] = 0;
+            $state['players']["2"]['movesThisTurn'] = 0;
+
+        }
+    }
+
+        // Verplaats speler
     $player['x'] = $newX;
     $player['y'] = $newY;
 
-    updateCouchPointsAndMove($state, $playerId, $player['x'], $player['y']);
+    updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
+    // Verwijder wool uit inventory
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
+
+    // Zet movesThisTurn +1
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
+
+    // Wissel beurt als movesThisTurn 2 of meer is
+    if ($player['movesThisTurn'] >= 2) {
+        // Wissel beurt en reset moves
+        $state['turn'] = ($playerId === "1") ? "2" : "1";
+        $state['players']['1']['movesThisTurn'] = 0;
+        $state['players']['2']['movesThisTurn'] = 0;
+    }
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
     exit;
 }
+
+
 
 elseif ($item === "milk") {
     $direction = $data['direction'] ?? null;
