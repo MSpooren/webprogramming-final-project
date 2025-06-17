@@ -82,9 +82,12 @@ error_reporting(E_ALL);
     <!-- Help Screen -->
     <div id="help-screen" style="display:none">
         <h2>How to Play</h2>
-        <p>Use W/A/S/D to move your character.<br>
-            Collect items and avoid obstacles.<br>
-            Special powers: Laserpointer, Wool (cat roll), Milk (diagonal).</p>
+        <p>Use W/A/S/D to move your character.</p>
+        <p>Collect special items by getting mouses.<br>
+        Special items include: Laserpointer, Wool (cat roll), Milk (diagonal).</p>
+        <p>Avoid the plant and lamp obstacles.</p>
+        <p>Get to the couch to score points.<br>
+        The first player to reach five points wins!</p>
         <button class="pixel-button" id="menu-h-btn">Back</button>
     </div>
 
@@ -96,7 +99,7 @@ error_reporting(E_ALL);
         <p>
             Game by:<br><br>
             Iwan Hofstra – s1234567<br><br>
-            Marilie Spooren – s1234567<br><br>
+            Marilie Spooren – s5916356<br><br>
             Wolter Bos – s1234567<br><br>
             Anko van Dijk – s4074661
         </p>
