@@ -256,11 +256,13 @@ elseif ($item === "milk") {
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
     // If 2 moves made, switch turn
-    if ($player['movesThisTurn'] >= 2) {
+if ($player['movesThisTurn'] >= 2) {
     $state['turn'] = ($playerId === "1") ? "2" : "1";
     $state['players']["1"]['movesThisTurn'] = 0;
     $state['players']["2"]['movesThisTurn'] = 0;
 }
+
+    $state['players'][$playerId] = $player;
 
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
