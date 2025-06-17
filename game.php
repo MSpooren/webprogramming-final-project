@@ -19,46 +19,6 @@
         }
     </script>
 
-    <style>
-        #grid {
-            display: grid;
-            grid-template-columns: repeat(7, 50px);
-            grid-template-rows: repeat(7, 50px);
-            gap: 0;
-            padding: 0;
-            margin: 0;
-            margin-bottom: 20px;
-        }
-
-        .tile {
-            width: 50px;
-            height: 50px;
-            background-color: #f4f4f4;
-            border: none;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            line-height: 50px;
-            font-weight: bold;
-            font-size: 20px;
-            position: relative;
-            box-sizing: border-box;
-
-            /* Backrgound PNG for each tile */
-            background-image: url('images/wooden_plank.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .tile img {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-    </style>
 </head>
 
 <body class="game-background">
