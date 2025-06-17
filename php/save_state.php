@@ -201,8 +201,6 @@ foreach ($gameState['mice'] as $mouse) {
 
 $gameState['mice'] = $remainingMice;
 
-
-
 // Respawn a mouse if one was caught
 if ($mouseCaught) {
     $occupiedPositions = [];

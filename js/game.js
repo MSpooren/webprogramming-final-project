@@ -1,6 +1,6 @@
 // game.js
 
-console.log("✅ game.js loaded");
+console.log("game.js loaded");
 
 // Load game state from server and update UI
 function loadGameState() {
@@ -219,7 +219,7 @@ $(document).ready(function () {
         const sessionId = localStorage.getItem("sessionId");
         const playerId = localStorage.getItem("playerId");
 
-        console.log("🔫 Laserpointer button clicked", { sessionId, playerId });
+        console.log("Laserpointer button clicked", { sessionId, playerId });
 
         $.ajax({
             url: "php/use_powerup.php",
@@ -241,7 +241,7 @@ $(document).ready(function () {
     $("#useWool").off("click").on("click", function () {
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
-    const direction = prompt("Welke richting? (up/down/left/right)");
+    const direction = prompt("Which direction? (up/down/left/right)");
 
     let dx = 0, dy = 0;
     switch (direction) {
@@ -250,7 +250,7 @@ $(document).ready(function () {
         case "left": dx = -3; break;
         case "right": dx = 3; break;
         default:
-            alert("Ongeldige richting");
+            alert("Invalid direction.");
             return;
     }
 
@@ -285,7 +285,7 @@ $("#useMilk").on("click", function () {
             return;
         }
 
-        const dir = prompt("Welke diagonaal? (↘, ↙, ↖, ↗)");
+        const dir = prompt("Which direction? (↘, ↙, ↖, ↗)");
         let dx = 0, dy = 0;
 
         if (dir === "↘") {
@@ -297,7 +297,7 @@ $("#useMilk").on("click", function () {
         } else if (dir === "↗") {
             dx = 1; dy = -1;
         } else {
-            alert("Ongeldige richting");
+            alert("Invalid direction.");
             return;
         }
 
@@ -313,10 +313,10 @@ $("#useMilk").on("click", function () {
             }),
             success: function (res) {
                 if (!res.success) {
-                    alert(res.error || "Fout bij gebruik van melk.");
+                    alert(res.error || "Error using milk.");
                     return;
                 }
-                alert("Melk gebruikt!");
+                alert("Used Milk!");
                 loadGameState();
             },
             error: function (xhr, status, error) {
@@ -325,8 +325,6 @@ $("#useMilk").on("click", function () {
         });
     });
 });
-
-
 
     // Player movement controls (WASD)
     $(document).on("keydown", function (e) {
