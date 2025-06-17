@@ -156,7 +156,7 @@ elseif ($item === "wool") {
 
     // Validate direction format
     if (!$direction || !isset($direction['x']) || !isset($direction['y'])) {
-        echo json_encode(["error" => "Ongeldige richting"]);
+        echo json_encode(["error" => "Invalid direction."]);
         exit;
     }
 
@@ -165,7 +165,7 @@ elseif ($item === "wool") {
 
     // Must move exactly 3 tiles in one axis
     if (!((abs($dx) === 3 && $dy === 0) || (abs($dy) === 3 && $dx === 0))) {
-        echo json_encode(["error" => "Kattenrol moet 3 vakjes in één richting zijn"]);
+        echo json_encode(["error" => "Catroll must be 3 tiles in one direction."]);
         exit;
     }
 
@@ -175,7 +175,7 @@ elseif ($item === "wool") {
 
     // Check board bounds
     if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
-        echo json_encode(["error" => "Buiten het speelveld"]);
+        echo json_encode(["error" => "Outside the playingfield."]);
         exit;
     }
 
@@ -194,9 +194,9 @@ elseif ($item === "wool") {
     // Zet movesThisTurn +1
     $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
-    // Wissel beurt als movesThisTurn 2 of meer is
+    // Change turn when movesThisTurn is 2 or more
     if ($player['movesThisTurn'] >= 2) {
-        // Wissel beurt en reset moves
+        // Change turn and reset moves
         $state['turn'] = ($playerId === "1") ? "2" : "1";
         $state['players']['1']['movesThisTurn'] = 0;
         $state['players']['2']['movesThisTurn'] = 0;
