@@ -77,6 +77,16 @@ function moveCouch(&$gameState)
     }
 }
 
+function isObstacleAt($state, $x, $y) {
+    if (!isset($state['obstacles'])) return false;
+    foreach ($state['obstacles'] as $obstacle) {
+        if ($obstacle['x'] === $x && $obstacle['y'] === $y) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 if ($item === "laserpointer") {
     $direction = $player['last_move'] ?? null;
@@ -96,13 +106,22 @@ if ($item === "laserpointer") {
 
     $newX = $opponent['x'] + $dx;
     $newY = $opponent['y'] + $dy;
+
+    // Check bounds
     $newX = max(0, min(6, $newX));
     $newY = max(0, min(6, $newY));
+
+    // ➕ Voeg hier de obstakel-check toe
+    if (isObstacleAt($state, $newX, $newY)) {
+        echo json_encode(["error" => "You can't push your opponent into an object!"]);
+        exit;
+    }
+
+    // Move opponent
     $opponent['x'] = $newX;
     $opponent['y'] = $newY;
 
     updateCouchPointsAndMove($state, $opponentId, $newX, $newY);
-
 
     $opponent['mirror_move'] = [
         'dx' => $dx,
@@ -140,6 +159,11 @@ elseif ($item === "wool") {
         exit;
     }
 
+     if (isObstacleAt($state, $newX, $newY)) {
+    echo json_encode(["error" => "You can't move into an object!"]);
+    exit;
+    }
+
     $player['x'] = $newX;
     $player['y'] = $newY;
 
@@ -175,6 +199,11 @@ elseif ($item === "milk") {
     if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
         echo json_encode(["error" => "Buiten het speelveld"]);
         exit;
+    }
+
+    if (isObstacleAt($state, $newX, $newY)) {
+    echo json_encode(["error" => "You can't move into an object!"]);
+    exit;
     }
 
     $player['x'] = $newX;
