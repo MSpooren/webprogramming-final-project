@@ -97,7 +97,7 @@ error_reporting(E_ALL);
         <br>
         <br>
         <p>
-            Game by:<br><br>
+            This game was made by:<br><br>
             Iwan Hofstra – s1234567<br><br>
             Marilie Spooren – s5916356<br><br>
             Wolter Bos – s1234567<br><br>
