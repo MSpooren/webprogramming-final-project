@@ -85,9 +85,9 @@
 
     <ul id="inventory"></ul>
 
-    <button class="pixel-button" id="useLaser">Gebruik Laserpointer</button>
-    <button class="pixel-button" id="useWool">Gebruik kattenrol (wool)</button>
-    <button class="pixel-button" id="useMilk">Gebruik Melk</button>
+    <button class="pixel-button" id="useLaser">Use Laserpointer</button>
+    <button class="pixel-button" id="useWool">Use Wool</button>
+    <button class="pixel-button" id="useMilk">Use Milk</button>
     <br>
     <button class="pixel-button" id="resetGame">Reset Game</button>
 </body>
