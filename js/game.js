@@ -2,14 +2,18 @@
 
 console.log("✅ game.js loaded");
 
+// Load game state from server and update UI
 function loadGameState() {
     const sessionId = localStorage.getItem("sessionId");
+    // Fetch current game state from server
     $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
         const lastTurn = localStorage.getItem("lastTurn");
+        // Reset move buffer if a new turn has started
         if (lastTurn === null || parseInt(lastTurn) !== state.turn) {
             moveBuffer = [];
             localStorage.setItem("lastTurn", state.turn);
         }
+        // Update UI components based on the game state
         renderGrid(state);
         updateTurnIndicator(state.turn, state);
         updateTurnCounter(state.turnCounter); 
@@ -18,6 +22,7 @@ function loadGameState() {
     });
 }
 
+// Renders the game grid with players, obstacles, couch, and mice
 function renderGrid(state) {
     const grid = $("#grid");
     grid.empty();
@@ -26,7 +31,7 @@ function renderGrid(state) {
         for (let x = 0; x < 7; x++) {
             const tile = $("<div>").addClass("tile");
 
-            // Players
+            // Render players
             for (let pid in state.players) {
                 const p = state.players[pid];
                 if (p.x === x && p.y === y) {
@@ -38,6 +43,7 @@ function renderGrid(state) {
                         height: "100%"
                     });
 
+                    // Show indicator for current player
                     if (isCurrentPlayer) {
                         const indicator = $("<div>").addClass("player-indicator");
                         container.append(indicator);
@@ -61,7 +67,7 @@ function renderGrid(state) {
                 }
             }
 
-            // Couch
+            // Render couch
             if (state.couch && state.couch.x === x && state.couch.y === y) {
                 const couchImg = $("<img>")
                     .attr("src", "images/couch.png")
@@ -79,7 +85,7 @@ function renderGrid(state) {
                 tile.append(couchImg);
             }
 
-            // Obstacles
+            // Render obstacles
             if (state.obstacles) {
                 for (let obj of state.obstacles) {
                     if (obj.x === x && obj.y === y) {
@@ -102,7 +108,7 @@ function renderGrid(state) {
                 }
             }
 
-            // Mice
+            // Render mice
             if (state.mice) {
                 for (let m of state.mice) {
                     if (m.x === x && m.y === y) {
@@ -127,8 +133,8 @@ function renderGrid(state) {
     }
 }
 
+// Updates the turn indicator with either a win message or whose turn it is
 function updateTurnIndicator(turnId, state) {
-    // Win condition display
     if (state.winner) {
         let msg = "";
         if (state.winner === "draw") {
@@ -144,16 +150,19 @@ function updateTurnIndicator(turnId, state) {
     $("#turn-indicator").text(parseInt(playerId) === turnId ? "Your turn!" : "Waiting for opponent...");
 }
 
+// Displays the current turn number
 function updateTurnCounter(turnCounter) {
     $("#turn-counter").text("Turn: " + (turnCounter || 1));
 }
 
+// Updates the inventory UI for the current player
 function updateInventory(state) {
     const playerId = localStorage.getItem("playerId");
     const items = state.players[playerId].inventory || [];
     $("#inventory").text("Inventory: " + items.join(", "));
 }
 
+// Displays the score of each player based on the couch_counter
 function updateScoreboard(state) {
     const p1 = state.couch_counter?.["1"] || 0;
     const p2 = state.couch_counter?.["2"] || 0;
@@ -163,8 +172,9 @@ function updateScoreboard(state) {
     $("#player2-score").text(n2 + ": " + p2);
 }
 
-let moveBuffer = [];
+let moveBuffer = []; // Tracks moves made in the current turn
 
+// Sends a move to the server if it's the player's turn and they haven't exceeded move limit
 function sendMove(dx, dy) {
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
@@ -204,7 +214,7 @@ $(document).ready(function () {
     const keyDown = {};
     const keyDelay = 200;
 
-    // Bind laserpointer usage
+    // Laserpointer power-up button
     $("#useLaser").on("click", function () {
         const sessionId = localStorage.getItem("sessionId");
         const playerId = localStorage.getItem("playerId");
@@ -227,6 +237,7 @@ $(document).ready(function () {
         });
     });
 
+    // Wool power-up button with directional input
     $("#useWool").off("click").on("click", function () {
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
@@ -263,7 +274,7 @@ $(document).ready(function () {
     });
 });
 
-
+// Milk power-up button with diagonal direction input
 $("#useMilk").on("click", function () {
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
@@ -317,7 +328,7 @@ $("#useMilk").on("click", function () {
 
 
 
-    // Movement
+    // Player movement controls (WASD)
     $(document).on("keydown", function (e) {
         const key = e.key.toLowerCase();
         if (keyDown[key]) return;
@@ -333,11 +344,12 @@ $("#useMilk").on("click", function () {
         if (moved) setTimeout(() => { keyDown[key] = false; }, keyDelay);
     });
 
+    // Reset key state on keyup
     $(document).on("keyup", function (e) {
         keyDown[e.key.toLowerCase()] = false;
     });
 
-    // Reset Game logic
+    // Game reset button logic
     $('#resetGame').click(function() {
         const sessionId = localStorage.getItem("sessionId");
         if (!sessionId) return;
@@ -347,7 +359,7 @@ $("#useMilk").on("click", function () {
             try { res = JSON.parse(response); } catch (e) { res = {success:false,message:response}; }
             alert(res.message);
             if (res.success) {
-                // Remove session info and redirect to index
+                // Clear local data and return to index
                 localStorage.removeItem("sessionId");
                 localStorage.removeItem("playerId");
                 
@@ -356,6 +368,7 @@ $("#useMilk").on("click", function () {
         });
     });
 
+    // Periodically refresh game state
     setInterval(loadGameState, 2000);
-    loadGameState();
+    loadGameState(); // Initial load
 });

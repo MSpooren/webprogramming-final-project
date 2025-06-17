@@ -1,13 +1,14 @@
 <?php
 // php/save_state.php
 
+// Decode incoming JSON request
 $data = json_decode(file_get_contents('php://input'), true);
 
 $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $move = $data['move'] ?? null;
 
-// If opponent is awaiting mirror move, assign the move direction
+// If opponent is awaiting mirror move, store direction and unset flag
 if (isset($opponent['awaiting_mirror'])) {
     $opponent['mirror_move'] = [
         'dx' => $move['x'],
@@ -16,57 +17,60 @@ if (isset($opponent['awaiting_mirror'])) {
     unset($opponent['awaiting_mirror']);
 }
 
+// Construct the filename for game session
 $filename = "../data/game_" . $sessionId . ".json";
 if (!file_exists($filename)) {
     echo json_encode(["error" => "Game file not found"]);
     exit;
 }
+
+// Load the current game state from file
 $gameState = json_decode(file_get_contents($filename), true);
 $player = &$gameState["players"][$playerId];
 
-// Block movement if game is over
+// Check if game has ended
 if (isset($gameState['winner'])) {
     echo json_encode(["error" => "Game over"]);
     exit;
 }
 
+// Flip turn number
 $state['turn'] = $state['turn'] === 1 ? 2 : 1;
 
-
+// Re-check file existence
 $filename = "../data/game_" . $sessionId . ".json";
 if (!file_exists($filename)) {
     echo json_encode(["error" => "Game file not found"]);
     exit;
 }
 
-// Check turn
+// Ensure it's the player's turn
 if ((int) $gameState["turn"] !== (int) $playerId) {
     echo json_encode(["error" => "Not your turn"]);
     exit;
 }
 
-// References
+// References to player and opponent
 $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
 
+// Re-parse input data
 $data = json_decode(file_get_contents('php://input'), true);
 
-
-
-
+// Update last_move based on direction
 if ($move['x'] === 1) $player['last_move'] = "right";
 elseif ($move['x'] === -1) $player['last_move'] = "left";
 elseif ($move['y'] === 1) $player['last_move'] = "down";
 elseif ($move['y'] === -1) $player['last_move'] = "up";
 
-// Track movesThisTurn
+// Count the number of moves made this turn
 if (!isset($player['movesThisTurn'])) {
     $player['movesThisTurn'] = 0;
 }
 $player['movesThisTurn']++;
 
-// Proposed new coordinates
+// Calculates proposed new coordinates
 $newX = $player['x'] + $move['x'];
 $newY = $player['y'] + $move['y'];
 
@@ -79,13 +83,13 @@ if (isset($gameState['obstacles'])) {
         }
     }
 }
-// Check bounds
+// Prevent out-of-bounds moves
 if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
     echo json_encode(["error" => "Move out of bounds"]);
     exit;
 }
 
-// If moving into opponent — try push
+// If moving into opponent, attempt to push
 if ($opponent['x'] === $newX && $opponent['y'] === $newY) {
     $pushX = $opponent['x'] + $move['x'];
     $pushY = $opponent['y'] + $move['y'];
@@ -96,12 +100,12 @@ if ($opponent['x'] === $newX && $opponent['y'] === $newY) {
         exit;
     }
 
-    // Push the opponent
+    // Apply push to opponent
     $opponent['x'] = $pushX;
     $opponent['y'] = $pushY;
 }
 
-// Apply player's move
+// Apply move to player
 $player['x'] = $newX;
 $player['y'] = $newY;
 
@@ -112,14 +116,12 @@ if (isset($opponent['mirror_move'])) {
     $targetX = $opponent['x'] + $mdx;
     $targetY = $opponent['y'] + $mdy;
 
-    // Check bounds
+    // Only apply if move stays within bounds
     if ($targetX >= 0 && $targetX <= 6 && $targetY >= 0 && $targetY <= 6) {
         $blocked = false;
-
-        // Prevent stepping onto anything occupied
         $blockedPositions = [];
 
-        // Include players (except the opponent themselves)
+        // Add all occupied tiles
         foreach ($gameState['players'] as $pid => $p) {
             if ($pid !== $opponentId)
                 $blockedPositions[] = [$p['x'], $p['y']];
@@ -142,6 +144,7 @@ if (isset($opponent['mirror_move'])) {
             }
         }
 
+        // Cancel if blocked
         foreach ($blockedPositions as $pos) {
             if ($pos[0] === $targetX && $pos[1] === $targetY) {
                 $blocked = true;
@@ -149,17 +152,18 @@ if (isset($opponent['mirror_move'])) {
             }
         }
 
+        // Move opponent if not blocked
         if (!$blocked) {
             $opponent['x'] = $targetX;
             $opponent['y'] = $targetY;
         }
     }
 
-    // Clear the effect
+    // Clear the mirror move effect
     unset($opponent['mirror_move']);
 }
 
-// Couch logic
+// Handle couch logic
 updateCouchPointsAndMove($gameState, $playerId, $newX, $newY);
 
 // Win condition: first to 5 couch points
@@ -178,19 +182,19 @@ if (!isset($player['inventory'])) {
     $player['inventory'] = [];
 }
 
-// Catch mouse only at new location — preserve others
+// Check if player caught a mouse
 $remainingMice = [];
 $mouseCaught = false;
 
 foreach ($gameState['mice'] as $mouse) {
     if ($mouse['x'] === $newX && $mouse['y'] === $newY) {
-        // Altijd een item geven bij het vangen van een muis
+        // Always give a random item wehn catching a mouse
         $possibleItems = ["laserpointer", "wool", "milk"];
         $randomItem = $possibleItems[array_rand($possibleItems)];
         $player['inventory'][] = $randomItem;
 
         $mouseCaught = true;
-        continue; // Verwijder deze muis
+        continue; // Don't include this mouse in remaining list
     }
     $remainingMice[] = $mouse;
 }
@@ -201,7 +205,6 @@ $gameState['mice'] = $remainingMice;
 
 // Respawn a mouse if one was caught
 if ($mouseCaught) {
-    // Find all unoccupied positions
     $occupiedPositions = [];
     foreach ($gameState['players'] as $p) {
         $occupiedPositions[] = [$p['x'], $p['y']];
@@ -239,6 +242,7 @@ if ($mouseCaught) {
     }
 }
 
+// Mouse movement logic
 $occupied = [];
 foreach ($gameState['players'] as $p) {
     $occupied[] = [$p['x'], $p['y']];
@@ -289,6 +293,7 @@ foreach ($gameState['mice'] as $mouse) {
         $mouse['x'] = $nextX;
         $mouse['y'] = $nextY;
     } else {
+        // Change direction randomly if move is blocked or out of bounds
         $mouse['direction'] = [0, 90, 180, 270][rand(0, 3)];
     }
 
@@ -298,7 +303,7 @@ foreach ($gameState['mice'] as $mouse) {
 
 $gameState['mice'] = $updatedMice;
 
-// After all move logic, handle turn switching:
+// Switch turn if player made 2 moves
 if ($player['movesThisTurn'] >= 2) {
     // Switch turn
     $gameState["turn"] = ((int) $playerId === 1) ? 2 : 1;
@@ -307,7 +312,7 @@ if ($player['movesThisTurn'] >= 2) {
     $gameState["players"][$opponentId]['movesThisTurn'] = 0;
 }
 
-// Save new state
+// Save updated game state
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
 echo json_encode(["status" => "moved"]);
 
@@ -350,12 +355,13 @@ function moveCouch(&$gameState)
 
 function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY)
 {
+    // Award couch points if player steps on couch
     if (isset($gameState['couch']) && $gameState['couch']['x'] === $newX && $gameState['couch']['y'] === $newY) {
         if (!isset($gameState['couch_counter'][$playerId])) {
             $gameState['couch_counter'][$playerId] = 0;
         }
         $gameState['couch_counter'][$playerId]++;
-        moveCouch($gameState);
+        moveCouch($gameState); // Move couch after point is scored
     }
 }
 ?>
