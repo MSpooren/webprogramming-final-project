@@ -169,7 +169,7 @@ elseif ($item === "wool") {
         exit;
     }
 
-    // Calculate destinination
+    // Calculate destination
     $newX = $player['x'] + $dx;
     $newY = $player['y'] + $dy;
 
@@ -179,31 +179,28 @@ elseif ($item === "wool") {
         exit;
     }
 
-     if (isObstacleAt($state, $newX, $newY)) {
-    echo json_encode(["error" => "You can't move into an object!"]);
-    exit;
+    // Prevent movement into obstacle
+    if (isObstacleAt($state, $newX, $newY)) {
+        echo json_encode(["error" => "You can't move into an object!"]);
+        exit;
     }
 
+    // Update player position
     $player['x'] = $newX;
     $player['y'] = $newY;
 
     updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
+    // Remove wool from inventory without counting as a move
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
 
-    // Zet movesThisTurn +1
-    $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
+    // Save updated player state
+    $state['players'][$playerId] = $player;
 
-    // Change turn when movesThisTurn is 2 or more
-    if ($player['movesThisTurn'] >= 2) {
-        // Change turn and reset moves
-        $state['turn'] = ($playerId === "1") ? "2" : "1";
-        $state['players']['1']['movesThisTurn'] = 0;
-        $state['players']['2']['movesThisTurn'] = 0;
-    }
-
-    // Save state
+    // Save overall game state
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
+
+    // Respond success
     echo json_encode(["success" => true]);
     exit;
 }
@@ -224,50 +221,48 @@ elseif ($item === "milk") {
     $dy = $direction['y'];
 
     // Must move exactly 1 tile diagonally
-    if (!((abs($dx) === 1 && abs($dy) === 1))) {
-        echo json_encode(["error" => "Movement must be diagonal."]);
+    if (!(abs($dx) === 1 && abs($dy) === 1)) {
+        echo json_encode(["error" => "You must move exactly 1 tile diagonally."]);
         exit;
     }
 
-    // Calculate destination
     $newX = $player['x'] + $dx;
     $newY = $player['y'] + $dy;
 
     // Check board bounds
     if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
-        echo json_encode(["error" => "Outside the playing field."]);
+        echo json_encode(["error" => "Out of bounds."]);
         exit;
     }
 
-    // Prevent movement into obstacle
+    // Prevent moving into obstacle
     if (isObstacleAt($state, $newX, $newY)) {
-    echo json_encode(["error" => "You can't move into an object!"]);
-    exit;
+        echo json_encode(["error" => "You can't move into an object!"]);
+        exit;
     }
 
-    // Update player postitions
+    // Update player position
     $player['x'] = $newX;
     $player['y'] = $newY;
 
+    // Handle possible couch interaction
     updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
     // Remove milk from inventory
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "milk"));
-    $player['movesThisTurn'] = ($player['movesThisTurn'] ?? 0) + 1;
 
-    // If 2 moves made, switch turn
-if ($player['movesThisTurn'] >= 2) {
-    $state['turn'] = ($playerId === "1") ? "2" : "1";
-    $state['players']["1"]['movesThisTurn'] = 0;
-    $state['players']["2"]['movesThisTurn'] = 0;
-}
+    // DO NOT increment movesThisTurn
+    // DO NOT change turn
 
+    // Save player state
     $state['players'][$playerId] = $player;
 
+    // Save updated game state
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
     exit;
 }
+
 
 // Fallback: Unknown item type
 echo json_encode(["error" => "Unknown item"]);
