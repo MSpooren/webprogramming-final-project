@@ -216,7 +216,7 @@ elseif ($item === "milk") {
 
     // Validate direction format
     if (!$direction || !isset($direction['x']) || !isset($direction['y'])) {
-        echo json_encode(["error" => "Ongeldige richting"]);
+        echo json_encode(["error" => "Invalid direction."]);
         exit;
     }
 
@@ -225,7 +225,7 @@ elseif ($item === "milk") {
 
     // Must move exactly 1 tile diagonally
     if (!((abs($dx) === 1 && abs($dy) === 1))) {
-        echo json_encode(["error" => "Beweging moet diagonaal zijn"]);
+        echo json_encode(["error" => "Movement must be diagonal."]);
         exit;
     }
 
@@ -235,7 +235,7 @@ elseif ($item === "milk") {
 
     // Check board bounds
     if ($newX < 0 || $newX > 6 || $newY < 0 || $newY > 6) {
-        echo json_encode(["error" => "Buiten het speelveld"]);
+        echo json_encode(["error" => "Outside the playing field."]);
         exit;
     }
 
