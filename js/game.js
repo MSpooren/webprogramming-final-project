@@ -228,7 +228,7 @@ $(document).ready(function () {
             data: JSON.stringify({ sessionId, playerId, item: "laserpointer" }),
             success: function (res) {
                 console.log("Laserpointer response:", res);
-                alert(res.success ? "Laserpointer activated!")
+                alert(res.success ? "Laserpointer activated!" : "Laserpointer failed: " + res.error);
                 loadGameState();
             },
             error: function (xhr, status, error) {
