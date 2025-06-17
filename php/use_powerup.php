@@ -4,11 +4,33 @@ $sessionId = $data['sessionId'] ?? null;
 $playerId = $data['playerId'] ?? null;
 $item = $data['item'] ?? null;
 
+// ✅ Eerst het bestand en state laden
+$filename = "../data/game_" . $sessionId . ".json";
+if (!file_exists($filename)) {
+    echo json_encode(["error" => "Game file not found"]);
+    exit;
+}
+
+$state = json_decode(file_get_contents($filename), true);
+
+// ✅ Nu mag je controleren wiens beurt het is
 if ((string)$state["turn"] !== (string)$playerId) {
     echo json_encode(["success" => false, "error" => "It is not your turn."]);
     exit;
 }
 
+// ✅ Daarna spelersgegevens ophalen
+$player = &$state['players'][$playerId];
+$opponentId = $playerId === "1" ? "2" : "1";
+$opponent = &$state['players'][$opponentId];
+
+// ✅ Check of speler het item heeft
+if (!in_array($item, $player['inventory'])) {
+    echo json_encode(["error" => "Item not in inventory"]);
+    exit;
+}
+
+// ✅ Couch-functies blijven hier onder
 function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY)
 {
     if (isset($gameState['couch']) && $gameState['couch']['x'] === $newX && $gameState['couch']['y'] === $newY) {
@@ -22,7 +44,6 @@ function updateCouchPointsAndMove(&$gameState, $playerId, $newX, $newY)
 
 function moveCouch(&$gameState)
 {
-    // Move couch to a random unoccupied position
     $occupied = [];
     foreach ($gameState['players'] as $p) {
         $occupied[] = [$p['x'], $p['y']];
@@ -30,7 +51,6 @@ function moveCouch(&$gameState)
     foreach ($gameState['mice'] as $m) {
         $occupied[] = [$m['x'], $m['y']];
     }
-    // Prevent placing on current couch position
     if (isset($gameState['couch'])) {
         $occupied[] = [$gameState['couch']['x'], $gameState['couch']['y']];
     }
@@ -57,21 +77,6 @@ function moveCouch(&$gameState)
     }
 }
 
-$filename = "../data/game_" . $sessionId . ".json";
-if (!file_exists($filename)) {
-    echo json_encode(["error" => "Game file not found"]);
-    exit;
-}
-
-$state = json_decode(file_get_contents($filename), true);
-$player = &$state['players'][$playerId];
-$opponentId = $playerId === "1" ? "2" : "1";
-$opponent = &$state['players'][$opponentId];
-
-if (!in_array($item, $player['inventory'])) {
-    echo json_encode(["error" => "Item not in inventory"]);
-    exit;
-}
 
 if ($item === "laserpointer") {
     $direction = $player['last_move'] ?? null;

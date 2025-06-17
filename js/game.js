@@ -276,11 +276,16 @@ $("#useMilk").on("click", function () {
 
         const dir = prompt("Welke diagonaal? (↘, ↙, ↖, ↗)");
         let dx = 0, dy = 0;
-        if (dir === "↘") { dx = 1; dy = 1; }
-        else if (dir === "↙") { dx = -1; dy = 1; }
-        else if (dir === "↖") { dx = -1; dy = -1; }
-        else if (dir === "↗") { dx = 1; dy = -1; }
-        else {
+
+        if (dir === "↘") {
+            dx = 1; dy = 1;
+        } else if (dir === "↙") {
+            dx = -1; dy = 1;
+        } else if (dir === "↖") {
+            dx = -1; dy = -1;
+        } else if (dir === "↗") {
+            dx = 1; dy = -1;
+        } else {
             alert("Ongeldige richting");
             return;
         }
@@ -296,7 +301,11 @@ $("#useMilk").on("click", function () {
                 direction: { x: dx, y: dy }
             }),
             success: function (res) {
-                alert(res.success ? "Melk gebruikt!" : "Melk gefaald: " + res.error);
+                if (!res.success) {
+                    alert(res.error || "Fout bij gebruik van melk.");
+                    return;
+                }
+                alert("Melk gebruikt!");
                 loadGameState();
             },
             error: function (xhr, status, error) {
@@ -305,6 +314,7 @@ $("#useMilk").on("click", function () {
         });
     });
 });
+
 
 
     // Movement
