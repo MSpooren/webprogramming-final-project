@@ -1,25 +1,29 @@
 <?php
 // php/start_game.php
 
+// Get the session ID from the query parameter
 $sessionId = isset($_GET['sessionId']) ? $_GET['sessionId'] : null;
 if (!$sessionId) {
     echo "Session ID missing";
     exit;
 }
 
+// Construct the game file path
 $filename = "../data/game_" . $sessionId . ".json";
+// Check if the game file exists
 if (!file_exists($filename)) {
     echo "Game file not found";
     exit;
 }
 
+// Load the existing game state
 $gameState = json_decode(file_get_contents($filename), true);
 
 // Preserve existing player info
 $player1 = $gameState["players"]["1"];
 $player2 = $gameState["players"]["2"];
 
-// Initialize game state
+// Initialize new game state with player positions and base values
 $gameState = [
     "players" => [
         "1" => array_merge($player1, ["x" => 0, "y" => 3, "status" => "normal", "movesThisTurn" => 0]),
@@ -53,6 +57,7 @@ while (count($mice) < 3) {
     $x = rand(0, 6);
     $y = rand(0, 6);
 
+    // Ensure no overlap with occupied tiles
     $tooClose = false;
     foreach ($occupied as $pos) {
         if ($pos[0] == $x && $pos[1] == $y) {
@@ -63,6 +68,7 @@ while (count($mice) < 3) {
 
     if ($tooClose) continue;
 
+    // Add mouse with a random direction
     $mice[] = [
         "x" => $x,
         "y" => $y,
@@ -73,7 +79,7 @@ while (count($mice) < 3) {
 
 $gameState["mice"] = $mice;
 
-// Add 2–3 static objects (e.g., plant, lamp)
+// Define a helper function to find a free position
 function getRandomFreePosition($occupied) {
     do {
         $x = rand(0, 6);
@@ -83,6 +89,7 @@ function getRandomFreePosition($occupied) {
     return $pos;
 }
 
+// Define obstacle types
 $obstacleTypes = ['plant', 'lamp', 'lamp'];
 $obstacles = [];
 
@@ -94,5 +101,8 @@ foreach ($obstacleTypes as $type) {
 
 $gameState["obstacles"] = $obstacles;
 
+// Save the initialized game state back to the file
 file_put_contents($filename, json_encode($gameState, JSON_PRETTY_PRINT));
+// Notify the client
 echo "Game started";
+?>
