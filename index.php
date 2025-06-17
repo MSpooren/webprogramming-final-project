@@ -83,7 +83,7 @@ error_reporting(E_ALL);
     <div id="help-screen" style="display:none">
         <h2>How to Play</h2>
         <p>Use W/A/S/D to move your character.</p>
-        <p>Collect special items by getting mouses.<br>
+        <p>Collect special items by catching mice.<br>
         Special items include: Laserpointer, Wool (cat roll), Milk (diagonal).</p>
         <p>Avoid the plant and lamp obstacles.</p>
         <p>Get to the couch to score points.<br>
