@@ -60,6 +60,13 @@ function moveCouch(&$gameState)
         $occupied[] = [$gameState['couch']['x'], $gameState['couch']['y']];
     }
 
+    // Voeg obstakels toe aan de bezette plekken
+    if (isset($gameState['obstacles'])) {
+        foreach ($gameState['obstacles'] as $obs) {
+            $occupied[] = [$obs['x'], $obs['y']];
+
+        }
+    }
     // Find all free tiles
     $free = [];
     for ($x = 0; $x < 7; $x++) {

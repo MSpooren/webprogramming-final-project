@@ -321,6 +321,12 @@ function moveCouch(&$gameState)
     if (isset($gameState['couch'])) {
         $occupied[] = [$gameState['couch']['x'], $gameState['couch']['y']];
     }
+    // Voeg obstakels toe aan de bezette plekken
+    if (isset($gameState['obstacles'])) {
+        foreach ($gameState['obstacles'] as $obs) {
+            $occupied[] = [$obs['x'], $obs['y']];
+        }
+    }
 
     $free = [];
     for ($x = 0; $x < 7; $x++) {
