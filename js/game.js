@@ -150,6 +150,11 @@ function updateTurnIndicator(turnId, state) {
     $("#turn-indicator").text(parseInt(playerId) === turnId ? "Your turn!" : "Waiting for opponent...");
 }
 
+function isGameOver(state) {
+    return !!state.winner;  // true als er een winnaar is (of draw)
+}
+
+
 // Displays the current turn number
 function updateTurnCounter(turnCounter) {
     $("#turn-counter").text("Turn: " + (turnCounter || 1));
@@ -221,14 +226,64 @@ $(document).ready(function () {
 
         console.log("Laserpointer button clicked", { sessionId, playerId });
 
+        $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+            // Check if the game is already won
+            if (state.winner) {
+                alert("The game has already been won.");
+                return;
+            }
+            
+            $.ajax({
+                url: "php/use_powerup.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ sessionId, playerId, item: "laserpointer" }),
+                success: function (res) {
+                    console.log("Laserpointer response:", res);
+                    alert(res.success ? "Laserpointer activated!" : "Laserpointer failed: " + res.error);
+                    loadGameState();
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        });
+    });
+
+    // Wool power-up button with directional input
+    $("#useWool").off("click").on("click", function () {
+    const sessionId = localStorage.getItem("sessionId");
+    $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+        if (isGameOver(state)) {
+            alert("Game is over, no more moves allowed.");
+            return;
+        }
+        const playerId = localStorage.getItem("playerId");
+        const direction = prompt("Which direction? (up/down/left/right)");
+
+        let dx = 0, dy = 0;
+        switch (direction) {
+            case "up": dy = -3; break;
+            case "down": dy = 3; break;
+            case "left": dx = -3; break;
+            case "right": dx = 3; break;
+            default:
+                alert("Invalid direction.");
+                return;
+        }
+
         $.ajax({
             url: "php/use_powerup.php",
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({ sessionId, playerId, item: "laserpointer" }),
+            data: JSON.stringify({
+                sessionId,
+                playerId,
+                item: "wool",
+                direction: { x: dx, y: dy }
+            }),
             success: function (res) {
-                console.log("Laserpointer response:", res);
-                alert(res.success ? "Laserpointer activated!" : "Laserpointer failed: " + res.error);
+                console.log("Wool response:", res);
                 loadGameState();
             },
             error: function (xhr, status, error) {
@@ -236,44 +291,7 @@ $(document).ready(function () {
             }
         });
     });
-
-    // Wool power-up button with directional input
-    $("#useWool").off("click").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
-    const direction = prompt("Which direction? (up/down/left/right)");
-
-    let dx = 0, dy = 0;
-    switch (direction) {
-        case "up": dy = -3; break;
-        case "down": dy = 3; break;
-        case "left": dx = -3; break;
-        case "right": dx = 3; break;
-        default:
-            alert("Invalid direction.");
-            return;
-    }
-
-    $.ajax({
-        url: "php/use_powerup.php",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            sessionId,
-            playerId,
-            item: "wool",
-            direction: { x: dx, y: dy }
-        }),
-        success: function (res) {
-            console.log("Wool response:", res);
-            loadGameState();
-        },
-        error: function (xhr, status, error) {
-            console.error("AJAX error:", status, error);
-        }
-    });
 });
-
 // Milk power-up button with diagonal direction input
 $("#useMilk").on("click", function () {
     const sessionId = localStorage.getItem("sessionId");
@@ -282,6 +300,11 @@ $("#useMilk").on("click", function () {
     $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
         if (state.turn.toString() !== playerId.toString()) {
             alert("It is not your turn!");
+            return;
+        }
+
+        if (isGameOver(state)) {
+            alert("Game is over, no more moves allowed.");
             return;
         }
 
@@ -312,10 +335,6 @@ $("#useMilk").on("click", function () {
                 direction: { x: dx, y: dy }
             }),
             success: function (res) {
-                if (!res.success) {
-                    alert(res.error || "Error using milk.");
-                    return;
-                }
                 alert("Used Milk!");
                 loadGameState();
             },
@@ -333,13 +352,23 @@ $("#useMilk").on("click", function () {
         keyDown[key] = true;
         console.log("Key pressed:", key);
 
-        let moved = false;
-        if (key === "w") { sendMove(0, -1); moved = true; }
-        if (key === "s") { sendMove(0, 1); moved = true; }
-        if (key === "a") { sendMove(-1, 0); moved = true; }
-        if (key === "d") { sendMove(1, 0); moved = true; }
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
 
-        if (moved) setTimeout(() => { keyDown[key] = false; }, keyDelay);
+        $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+            if (state.winner) {
+                alert("The game has already been won.");
+                return;
+            }
+
+            let moved = false;
+            if (key === "w") { sendMove(0, -1); moved = true; }
+            if (key === "s") { sendMove(0, 1); moved = true; }
+            if (key === "a") { sendMove(-1, 0); moved = true; }
+            if (key === "d") { sendMove(1, 0); moved = true; }
+
+            if (moved) setTimeout(() => { keyDown[key] = false; }, keyDelay);
+        });
     });
 
     // Reset key state on keyup

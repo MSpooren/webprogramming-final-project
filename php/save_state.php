@@ -26,13 +26,6 @@ if (!file_exists($filename)) {
 
 // Load the current game state from file
 $gameState = json_decode(file_get_contents($filename), true);
-// !!!! $player = &$gameState["players"][$playerId];
-
-// Check if game has ended
-//!!!! if (isset($gameState['winner'])) {
-    //echo json_encode(["error" => "Game over"]);
-    //exit;
-//}
 
 // Flip turn number
 $state['turn'] = $state['turn'] === 1 ? 2 : 1;
