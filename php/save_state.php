@@ -48,9 +48,6 @@ $player = &$gameState["players"][$playerId];
 $opponentId = $playerId == "1" ? "2" : "1";
 $opponent = &$gameState["players"][$opponentId];
 
-// Re-parse input data
-// !!!! $data = json_decode(file_get_contents('php://input'), true);
-
 // Update last_move based on direction
 if ($move['x'] === 1) $player['last_move'] = "right";
 elseif ($move['x'] === -1) $player['last_move'] = "left";
