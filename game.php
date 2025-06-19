@@ -25,6 +25,7 @@ include 'templates/header.php';
 <!-- Instruction for keyboard movement -->
 <p>Use W A S D to move your cat.</p>
 <!-- Buttons for using power-ups -->
+<p>Inventory:</p>
 <button class="pixel-button" id="useLaser" style="display:none"><img src="images/laserpointer.png" alt="Laserpointer" style="height:24px;vertical-align:middle;"> <span id="laserCount"></span></button>
 <button class="pixel-button" id="useWool" style="display:none"><img src="images/wool.png" alt="Wool" style="height:24px;vertical-align:middle;"> <span id="woolCount"></span></button>
 <button class="pixel-button" id="useMilk" style="display:none"><img src="images/Milk.png" alt="Milk" style="height:24px;vertical-align:middle;"> <span id="milkCount"></span></button>
