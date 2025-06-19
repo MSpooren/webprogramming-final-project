@@ -2,6 +2,8 @@
 
 A web-based game built with PHP and jQuery, about cats fighting over a couch.
 
+<img src="images/background.png" alt="Game's background" width="500"/>
+
 ---
 
 ## Features
