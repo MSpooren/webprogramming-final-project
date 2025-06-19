@@ -138,8 +138,8 @@ h2 {
 .tile {
     width: 50px;
     height: 50px;
-    background-color: #f4f4f4; /* Match inline style */
-    border: none; /* Remove border for consistency */
+    background-color: #f4f4f4; 
+    border: none; 
     margin: 0;
     padding: 0;
     text-align: center;

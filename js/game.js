@@ -164,7 +164,7 @@ function updateInventory(state) {
     const playerId = localStorage.getItem("playerId");
     const items = state.players[playerId].inventory || [];
     $("#inventory").text("Inventory: " + items.join(", "));
-    if (typeof updatePowerupButtons === 'function') updatePowerupButtons(items); /////////////////
+    if (typeof updatePowerupButtons === 'function') updatePowerupButtons(items);
 }
 
 // Handles showing/hiding power-up buttons and updating their counts based on inventory
