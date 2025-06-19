@@ -16,7 +16,7 @@ function loadGameState() {
         // Update UI components based on the game state
         renderGrid(state);
         updateTurnIndicator(state.turn, state);
-        updateTurnCounter(state.turnCounter); 
+        updateTurnCounter(state.turnCounter);
         updateInventory(state);
         updateScoreboard(state);
     });
@@ -232,7 +232,7 @@ $(document).ready(function () {
                 alert("The game has already been won.");
                 return;
             }
-            
+
             $.ajax({
                 url: "php/use_powerup.php",
                 method: "POST",
@@ -240,7 +240,7 @@ $(document).ready(function () {
                 data: JSON.stringify({ sessionId, playerId, item: "laserpointer" }),
                 success: function (res) {
                     console.log("Laserpointer response:", res);
-                    alert(res.success ? "Laserpointer activated!" : "Laserpointer failed: " + res.error);
+                    alert(res.success ? "Laserpointer activated!" : "Laserpointer failed." + (res.error ? " Reason: " + res.error : ""));
                     loadGameState();
                 },
                 error: function (xhr, status, error) {
@@ -252,98 +252,98 @@ $(document).ready(function () {
 
     // Wool power-up button with directional input
     $("#useWool").off("click").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
-        if (isGameOver(state)) {
-            alert("Game is over, no more moves allowed.");
-            return;
-        }
-        const playerId = localStorage.getItem("playerId");
-        const direction = prompt("Which direction? (up/down/left/right)");
+        const sessionId = localStorage.getItem("sessionId");
+        $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+            if (isGameOver(state)) {
+                alert("Game is over, no more moves allowed.");
+                return;
+            }
+            const playerId = localStorage.getItem("playerId");
+            const direction = prompt("Which direction? (up/down/left/right)");
 
-        let dx = 0, dy = 0;
-        switch (direction) {
-            case "up": dy = -3; break;
-            case "down": dy = 3; break;
-            case "left": dx = -3; break;
-            case "right": dx = 3; break;
-            default:
+            let dx = 0, dy = 0;
+            switch (direction) {
+                case "up": dy = -3; break;
+                case "down": dy = 3; break;
+                case "left": dx = -3; break;
+                case "right": dx = 3; break;
+                default:
+                    alert("Invalid direction.");
+                    return;
+            }
+
+            $.ajax({
+                url: "php/use_powerup.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    sessionId,
+                    playerId,
+                    item: "wool",
+                    direction: { x: dx, y: dy }
+                }),
+                success: function (res) {
+                    console.log("Wool response:", res);
+                    loadGameState();
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        });
+    });
+    // Milk power-up button with diagonal direction input
+    $("#useMilk").on("click", function () {
+        const sessionId = localStorage.getItem("sessionId");
+        const playerId = localStorage.getItem("playerId");
+
+        $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
+            if (state.turn.toString() !== playerId.toString()) {
+                alert("It is not your turn!");
+                return;
+            }
+
+            if (isGameOver(state)) {
+                alert("Game is over, no more moves allowed.");
+                return;
+            }
+
+            const dir = prompt("Which direction? (↘, ↙, ↖, ↗)");
+            let dx = 0, dy = 0;
+
+            if (dir === "↘") {
+                dx = 1; dy = 1;
+            } else if (dir === "↙") {
+                dx = -1; dy = 1;
+            } else if (dir === "↖") {
+                dx = -1; dy = -1;
+            } else if (dir === "↗") {
+                dx = 1; dy = -1;
+            } else {
                 alert("Invalid direction.");
                 return;
-        }
-
-        $.ajax({
-            url: "php/use_powerup.php",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                sessionId,
-                playerId,
-                item: "wool",
-                direction: { x: dx, y: dy }
-            }),
-            success: function (res) {
-                console.log("Wool response:", res);
-                loadGameState();
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX error:", status, error);
             }
+
+            $.ajax({
+                url: "php/use_powerup.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    sessionId,
+                    playerId,
+                    item: "milk",
+                    direction: { x: dx, y: dy }
+                }),
+                success: function (res) {
+                    alert("Used Milk!");
+                    loadGameState();
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
         });
     });
-});
-// Milk power-up button with diagonal direction input
-$("#useMilk").on("click", function () {
-    const sessionId = localStorage.getItem("sessionId");
-    const playerId = localStorage.getItem("playerId");
-
-    $.getJSON("php/load_state.php?sessionId=" + sessionId, function (state) {
-        if (state.turn.toString() !== playerId.toString()) {
-            alert("It is not your turn!");
-            return;
-        }
-
-        if (isGameOver(state)) {
-            alert("Game is over, no more moves allowed.");
-            return;
-        }
-
-        const dir = prompt("Which direction? (↘, ↙, ↖, ↗)");
-        let dx = 0, dy = 0;
-
-        if (dir === "↘") {
-            dx = 1; dy = 1;
-        } else if (dir === "↙") {
-            dx = -1; dy = 1;
-        } else if (dir === "↖") {
-            dx = -1; dy = -1;
-        } else if (dir === "↗") {
-            dx = 1; dy = -1;
-        } else {
-            alert("Invalid direction.");
-            return;
-        }
-
-        $.ajax({
-            url: "php/use_powerup.php",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                sessionId,
-                playerId,
-                item: "milk",
-                direction: { x: dx, y: dy }
-            }),
-            success: function (res) {
-                alert("Used Milk!");
-                loadGameState();
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX error:", status, error);
-            }
-        });
-    });
-});
 
     // Player movement controls (WASD)
     $(document).on("keydown", function (e) {
@@ -377,19 +377,19 @@ $("#useMilk").on("click", function () {
     });
 
     // Game reset button logic
-    $('#resetGame').click(function() {
+    $('#resetGame').click(function () {
         const sessionId = localStorage.getItem("sessionId");
         if (!sessionId) return;
         if (!confirm('Are you sure you want to reset the game?')) return;
-        $.get('php/reset_game.php', { sessionId: sessionId }, function(response) {
+        $.get('php/reset_game.php', { sessionId: sessionId }, function (response) {
             let res;
-            try { res = JSON.parse(response); } catch (e) { res = {success:false,message:response}; }
+            try { res = JSON.parse(response); } catch (e) { res = { success: false, message: response }; }
             alert(res.message);
             if (res.success) {
                 // Clear local data and return to index
                 localStorage.removeItem("sessionId");
                 localStorage.removeItem("playerId");
-                
+
             }
             window.location.href = "index.php";
         });

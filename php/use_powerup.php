@@ -1,4 +1,6 @@
 <?php
+ob_clean();
+header('Content-Type: application/json');
 // Get incoming JSON data from request body
 $data = json_decode(file_get_contents('php://input'), true);
 // Extract required parameters from the request
@@ -16,7 +18,7 @@ if (!file_exists($filename)) {
 $state = json_decode(file_get_contents($filename), true);
 
 // Check if it's the player's turn
-if ((string)$state["turn"] !== (string)$playerId) {
+if ((string) $state["turn"] !== (string) $playerId) {
     echo json_encode(["success" => false, "error" => "It is not your turn."]);
     exit;
 }
@@ -93,8 +95,10 @@ function moveCouch(&$gameState)
 }
 
 // Check if there's an obstacle at a given position
-function isObstacleAt($state, $x, $y) {
-    if (!isset($state['obstacles'])) return false;
+function isObstacleAt($state, $x, $y)
+{
+    if (!isset($state['obstacles']))
+        return false;
     foreach ($state['obstacles'] as $obstacle) {
         if ($obstacle['x'] === $x && $obstacle['y'] === $y) {
             return true;
@@ -115,10 +119,18 @@ if ($item === "laserpointer") {
     $dx = 0;
     $dy = 0;
     switch ($direction) {
-        case "up": $dy = -1; break;
-        case "down": $dy = 1; break;
-        case "left": $dx = -1; break;
-        case "right": $dx = 1; break;
+        case "up":
+            $dy = -1;
+            break;
+        case "down":
+            $dy = 1;
+            break;
+        case "left":
+            $dx = -1;
+            break;
+        case "right":
+            $dx = 1;
+            break;
     }
 
     // Calculate opponent's new position
@@ -151,6 +163,11 @@ if ($item === "laserpointer") {
     // Remove laserpointer from inventory
     $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "laserpointer"));
 
+    // Save changes back into state
+    $state['players'][$opponentId] = $opponent;
+    $state['players'][$playerId] = $player;
+
+    error_log("Laserpointer response: " . json_encode(["success" => true]));
     // Save state
     file_put_contents($filename, json_encode($state, JSON_PRETTY_PRINT));
     echo json_encode(["success" => true]);
