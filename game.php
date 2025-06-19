@@ -24,16 +24,15 @@ include 'templates/header.php';
 </div>
 <!-- Instruction for keyboard movement -->
 <p>Use W A S D to move your cat.</p>
-<!-- Inventory list UI -->
-<ul id="inventory"></ul>
 <!-- Buttons for using power-ups -->
-<button class="pixel-button" id="useLaser">Use Laserpointer</button>
-<button class="pixel-button" id="useWool">Use Wool</button>
-<button class="pixel-button" id="useMilk">Use Milk</button>
+<button class="pixel-button" id="useLaser" style="display:none"><img src="images/laserpointer.png" alt="Laserpointer" style="height:24px;vertical-align:middle;"> <span id="laserCount"></span></button>
+<button class="pixel-button" id="useWool" style="display:none"><img src="images/wool.png" alt="Wool" style="height:24px;vertical-align:middle;"> <span id="woolCount"></span></button>
+<button class="pixel-button" id="useMilk" style="display:none"><img src="images/Milk.png" alt="Milk" style="height:24px;vertical-align:middle;"> <span id="milkCount"></span></button>
 <br>
 <!-- Reset button to restart the game -->
 <button class="pixel-button" id="resetGame">Reset Game</button>
 <script src="js/game.js"></script>
+<script src="js/powerup_buttons.js"></script>
 <script>
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");

@@ -95,7 +95,7 @@ body.index-background::before {
 h1,
 h2 {
     font-size: 32px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 /* Hide setup-related screens by default */
@@ -398,4 +398,13 @@ input[type="text"]:focus {
     width: 500px;
     animation: float 2s ease-in-out infinite;
     filter: drop-shadow(4px 6px 10px rgba(0, 0, 0, 0.6));
+}
+
+/* Enlarge image inside .pixel-button to 36px high */
+.pixel-button img {
+    height: 36px !important;
+    width: auto;
+    vertical-align: middle;
+    margin: -6px 0; /* Pull image out of button padding */
+    pointer-events: none;
 }

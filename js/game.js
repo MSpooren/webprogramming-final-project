@@ -165,6 +165,7 @@ function updateInventory(state) {
     const playerId = localStorage.getItem("playerId");
     const items = state.players[playerId].inventory || [];
     $("#inventory").text("Inventory: " + items.join(", "));
+    if (typeof updatePowerupButtons === 'function') updatePowerupButtons(items); /////////////////
 }
 
 // Displays the score of each player based on the couch_counter
