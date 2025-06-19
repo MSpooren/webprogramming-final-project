@@ -18,6 +18,6 @@ if (file_exists($filename)) {
     echo json_encode(["success" => true, "message" => "Game reset."]);
 } else {
     // If the file doesn't exist, return an error message
-    echo json_encode(["success" => false, "message" => "Game file not found."]);
+    echo json_encode(["success" => false, "message" => "Game file already deleted, returning to Main Menu."]);
 }
 ?>

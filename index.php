@@ -82,12 +82,48 @@ error_reporting(E_ALL);
     <!-- Help Screen -->
     <div id="help-screen" style="display:none">
         <h2>How to Play</h2>
-        <p>Use W/A/S/D to move your character.</p>
-        <p>Collect special items by getting mouses.<br>
-        Special items include: Laserpointer, Wool (cat roll), Milk (diagonal).</p>
-        <p>Avoid the plant and lamp obstacles.</p>
-        <p>Get to the couch to score points.<br>
-        The first player to reach five points wins!</p>
+        <br>
+        <p>
+            Use W/A/S/D to move your character.<br><br>
+            Your Cat is indicated by a red triangle above their head.<br><br>
+            You can push your opponent by moving into them!
+        </p>
+        <br>
+
+        <p>
+            <img src="images/mouse.png" alt="Mouse" style="height: 50px; vertical-align: middle;">
+            Collect special items by getting mouses.
+        </p>
+        <br>
+
+        <p>Special items include:</p>
+        <p>
+            <img src="images/laserpointer.png" alt="Laserpointer" style="height: 50px; vertical-align: middle;">
+            Laserpointer : Push your opponent in your last move direction
+        </p>
+        <p>
+            <img src="images/wool.png" alt="Wool" style="height: 60px; vertical-align: middle;">
+            Wool : Roll 3 tiles in a straight line
+        </p>
+        <p>
+            <img src="images/milk.png" alt="Milk" style="height: 35px; vertical-align: middle;">
+            Milk : Move diagonally once
+        </p>
+        <br>
+
+        <p>
+            <img src="images/plant.png" alt="Plant" style="height: 50px; vertical-align: middle;">
+            <img src="images/lamp.png" alt="Lamp" style="height: 50px; vertical-align: middle;">
+            The plant and lamp are immovable obstacles.
+        </p>
+        <br>
+
+        <p>
+            <img src="images/couch.png" alt="Couch" style="height: 50px; vertical-align: middle;">
+            Get your cat onto the couch to score points!<br><br>
+            The first player to reach five points wins!
+        </p>
+
         <button class="pixel-button" id="menu-h-btn">Back</button>
     </div>
 
@@ -98,14 +134,14 @@ error_reporting(E_ALL);
         <br>
         <p>
             This game was made by:<br><br>
-            Iwan Hofstra – s5769450<br><br>
-            Marilie Spooren – s5916356<br><br>
-            Wolter Bos – s1234567<br><br>
-            Anko van Dijk – s4074661
+            Iwan Hofstra : s5769450<br><br>
+            Marilie Spooren : s5916356<br><br>
+            Wolter Bos : s1234567<br><br>
+            Anko van Dijk : s4074661
         </p>
         <button class="pixel-button" id="menu-c-btn">Back</button>
     </div>
     <script src="js/skin_carousel.js"></script>
     <script src="js/index.js"></script>
 
-<?php include 'templates/footer.php'; ?>
+    <?php include 'templates/footer.php'; ?>

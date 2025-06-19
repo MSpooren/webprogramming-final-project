@@ -242,7 +242,7 @@ $(document).ready(function () {
                     console.log("Laserpointer response:", res);
                     alert(res.success ? "Laserpointer activated!" : "Laserpointer failed." + (res.error ? " Reason: " + res.error : ""));
                     loadGameState();
-
+F
                     for (let k in keyDown) keyDown[k] = false;
                 },
                 error: function (xhr, status, error) {
