@@ -242,6 +242,8 @@ $(document).ready(function () {
                     console.log("Laserpointer response:", res);
                     alert(res.success ? "Laserpointer activated!" : "Laserpointer failed." + (res.error ? " Reason: " + res.error : ""));
                     loadGameState();
+
+                    for (let k in keyDown) keyDown[k] = false;
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX error:", status, error);
@@ -285,6 +287,8 @@ $(document).ready(function () {
                 success: function (res) {
                     console.log("Wool response:", res);
                     loadGameState();
+
+                    for (let k in keyDown) keyDown[k] = false;
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX error:", status, error);
@@ -337,6 +341,8 @@ $(document).ready(function () {
                 success: function (res) {
                     alert("Used Milk!");
                     loadGameState();
+
+                    for (let k in keyDown) keyDown[k] = false;
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX error:", status, error);
