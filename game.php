@@ -33,7 +33,6 @@ include 'templates/header.php';
 <!-- Reset button to restart the game -->
 <button class="pixel-button" id="resetGame">Reset Game</button>
 <script src="js/game.js"></script>
-<script src="js/powerup_buttons.js"></script>
 <script>
     const sessionId = localStorage.getItem("sessionId");
     const playerId = localStorage.getItem("playerId");
