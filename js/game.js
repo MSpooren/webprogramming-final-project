@@ -248,7 +248,10 @@ $(document).ready(function () {
                 alert("The game has already been won.");
                 return;
             }
-
+            if (state.turn.toString() !== playerId.toString()) {
+                alert("It is not your turn!");
+                return;
+            }
             $.ajax({
                 url: "php/use_powerup.php",
                 method: "POST",
@@ -277,6 +280,10 @@ F
                 return;
             }
             const playerId = localStorage.getItem("playerId");
+            if (state.turn.toString() !== playerId.toString()) {
+                alert("It is not your turn!");
+                return;
+            }
             const direction = prompt("Which direction? (up/down/left/right)");
 
             let dx = 0, dy = 0;
