@@ -161,7 +161,11 @@ if ($item === "laserpointer") {
     ];
 
     // Remove laserpointer from inventory
-    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "laserpointer"));
+    $index = array_search("laserpointer", $player['inventory']);
+    if ($index !== false) {
+        unset($player['inventory'][$index]);
+        $player['inventory'] = array_values($player['inventory']);
+    }
 
     // Save changes back into state
     $state['players'][$opponentId] = $opponent;
@@ -216,7 +220,11 @@ elseif ($item === "wool") {
     updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
     // Remove wool from inventory without counting as a move
-    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "wool"));
+    $index = array_search("wool", $player['inventory']);
+    if ($index !== false) {
+        unset($player['inventory'][$index]);
+        $player['inventory'] = array_values($player['inventory']);
+    }
 
     // Save updated player state
     $state['players'][$playerId] = $player;
@@ -273,7 +281,11 @@ elseif ($item === "milk") {
     updateCouchPointsAndMove($state, $playerId, $newX, $newY);
 
     // Remove milk from inventory
-    $player['inventory'] = array_values(array_filter($player['inventory'], fn($i) => $i !== "milk"));
+    $index = array_search("milk", $player['inventory']);
+    if ($index !== false) {
+        unset($player['inventory'][$index]);
+        $player['inventory'] = array_values($player['inventory']);
+    }
 
     // DO NOT increment movesThisTurn
     // DO NOT change turn
