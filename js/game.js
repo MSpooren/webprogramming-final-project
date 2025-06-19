@@ -151,9 +151,8 @@ function updateTurnIndicator(turnId, state) {
 }
 
 function isGameOver(state) {
-    return !!state.winner;  // true als er een winnaar is (of draw)
+    return !!state.winner;  // True if there is a winner.
 }
-
 
 // Displays the current turn number
 function updateTurnCounter(turnCounter) {
@@ -297,6 +296,7 @@ F
             });
         });
     });
+    
     // Milk power-up button with diagonal direction input
     $("#useMilk").on("click", function () {
         const sessionId = localStorage.getItem("sessionId");
